@@ -8,7 +8,7 @@ A simple, privacy-first Twilio-based hotline. Key features:
 
 ## Preparation
 
-* Create a twilio account: https://twilio.com
+* Create a Twilio account: https://twilio.com
   * Make a note of your twilio account SID and auth token
 * Create a shift calendar for hotline operators (optional)
   * Make a note of the url to the .ics feed
@@ -69,7 +69,7 @@ From the admin dashboard you can:
   * **Operators** -- View, add, edit, and remove operators (with name, phone number, and language support)
   * **Blocklist** -- Add or remove blocked phone numbers
   * **Languages** -- Add or remove supported languages for the caller greeting
-  * **Special Call Handling** -- Define key sequences to auto-accept collect-style calls from specific numbers, and optionally restrict the hotline to accept calls only from those numbers
+  * **Special Call Handling** -- Define key sequences to auto-accept collect-style calls from specific numbers, and optionally restrict the hotline to accept calls only from those numbers. Each number can also have a name, which operators hear before accepting the call, and a language, which skips the language menu for that number
 
 All data is stored securely in Twilio Serverless environment variables.
 
@@ -132,5 +132,5 @@ Remove a function:
 ## Features under consideration
 
  - [ ] Allow operators to place outbound calls
- - [ ] Allow known numbers to bypass the language menu
+ - [ ] Allow operators to respond to incoming text messages
  - [ ] Move [default Twilio data residency](https://www.twilio.com/docs/global-infrastructure) to the EU
