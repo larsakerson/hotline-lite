@@ -8,7 +8,7 @@ A simple, privacy-first Twilio-based hotline. Key features:
 
 ## Preparation
 
-* Create a twilio account: https://twilio.com
+* Create a Twilio account: https://twilio.com
   * Make a note of your twilio account SID and auth token
 * Create a shift calendar for hotline operators (optional)
   * Make a note of the url to the .ics feed
@@ -132,5 +132,5 @@ Remove a function:
 ## Features under consideration
 
  - [ ] Allow operators to place outbound calls
- - [ ] Allow known numbers to bypass the language menu
+ - [ ] Allow operators to respond to incoming text messages
  - [ ] Move [default Twilio data residency](https://www.twilio.com/docs/global-infrastructure) to the EU

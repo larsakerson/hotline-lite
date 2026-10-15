@@ -8,6 +8,13 @@ exports.handler = function (context, event, callback) {
   const hotlineName = (context.HOTLINE_NAME) ? context.HOTLINE_NAME.split(',') : languages.map(x => messagesMap[x].name);
   const localizedName = hotlineName[languages.indexOf(event.language)] || messagesMap[event.language].name;
 
+  // Identify callers from a known number
+  let connectionSequences = [];
+  try { connectionSequences = JSON.parse(context.CONNECTION_SEQUENCES || '[]'); }
+  catch (e) { connectionSequences = []; }
+  if (!Array.isArray(connectionSequences)) connectionSequences = [];
+  const callerSequence = connectionSequences.find(s => s && s.number === event.callerFrom) || false;
+
   if (!event.Digits) {
     const gather = twiml.gather({
       numDigits: 1,
@@ -16,7 +23,7 @@ exports.handler = function (context, event, callback) {
     sayLangMap(
       gather, 
       event.language, 
-      messagesMap[event.language].operator.precall.intro.replace('{name}', localizedName), 
+      messagesMap[event.language].operator.precall.intro.replace('{name}', (callerSequence ? callerSequence.name + ' via ' : '') + localizedName), 
       event.callerFrom
     );
     // By default, if no gather response happens within the timeout, reject the reservation.
