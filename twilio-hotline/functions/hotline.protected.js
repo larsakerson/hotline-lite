@@ -49,20 +49,23 @@ exports.handler = async function (context, event, callback) {
     }
   }
 
+  let activeLanguages = event.activeLanguages ? new Set(event.activeLanguages.split(',') || '') : [];
+
   if (!event.Digits && languages.length > 1) {
     // Update the workers first. Worker sync is a best-effort refresh, never a
     // gate on the call: if it throws, TaskRouter still holds the roster from the
     // last successful sync, so answer the caller and let the error surface in the
     // logs rather than dropping them.
     try {
-      await updateWorkers(context);
+      activeLanguages = await updateWorkers(context);
     } catch (e) {
       console.error('update_workers_failed ' + (e.message || e));
     }
   }
 
   const playMenu = function () {
-    const gather = twiml.gather({ numDigits: 1 });
+    const gather_endpoint = activeLanguages ? '/hotline?activeLanguages=' + encodeURIComponent(Array.from(activeLanguages).join(',')) : '/hotline';
+    const gather = twiml.gather({ numDigits: 1, action: gather_endpoint });
     // Say the initial greeting in each language, twice
     for (let n = 0; n < 2; n++) {
       for (let i = 0; i < languages.length; i++) {
@@ -93,6 +96,13 @@ exports.handler = async function (context, event, callback) {
       // NOTE: the dialing instructions in greetingMap *must* be in the order 1, 2, 3, ...
       key = languages[event.Digits - 1];  // zero-indexed
       console.log("Caller selected language:", key);
+    }
+    // Don't queue a call nobody can take: when no on-call operator speaks the
+    // language, tell the caller and offer a message or the menu instead.
+    if (!activeLanguages.has(key)) {
+      console.log("No on-call operator speaks", key);
+      twiml.redirect('/noOperators?language=' + key + '&callerFrom=' + encodeURIComponent(event.From) + '&activeLanguages=' + encodeURIComponent(Array.from(activeLanguages).join(',')));
+      return callback(null, twiml);
     }
     // The entry's name goes on the task so preCall can announce it to the operator.
     twiml.enqueue({
