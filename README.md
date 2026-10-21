@@ -1,46 +1,50 @@
 # Simple Hotline
 
-A simple, privacy-first Twilio-based hotline. Key features:
+A simple, privacy-first Twilio-based hotline. Key features include:
 * multilingual support
-* web-based admin interface for managing operators, blocklists, and languages
 * minimal logging
-* [ALPHA] Signal notifications
+* web-based admin interface for managing operators, blocklists, languages, and wait messages
+* ability to accept calls from systems that impose an initial menu before connecting the caller 
+* _[alpha]_ integration with Signal for audio and text message delivery  
 
 ## Preparation
 
-* Create a Twilio account: https://twilio.com
+* Create [a Twilio account](https://twilio.com)
   * Make a note of your twilio account SID and auth token
 * Create a shift calendar for hotline operators (optional)
   * Make a note of the url to the .ics feed
   * _[Tuta](https://tuta.com/calendar) is a free, secure option if you prefer not to use Google_
 * Collect the phone numbers, aliases, and working languages of your operator team
+* Collect the phone numbers and key sequences required to connect with any known callers
 
 ## Setup
 
 1. Install twilio CLI: https://www.twilio.com/docs/twilio-cli/getting-started/install
-2. Clone this repo: `gh repo clone thandal/hotline-lite`
+2. Clone this repo: `gh repo clone larsakerson/hotline-lite`
 3. Run the setup script: `./setup_hotline.sh`
 
 The setup script provisions the phone number, TaskRouter workspace/workflow, and
-admin password, then deploys the service. Everything else -- operators, languages,
-the blocklist, the shift calendar, and special call handling -- is configured from
-the admin dashboard (`/admin.html`) after deployment.
+admin password, then deploys the service. Everything else (operators, languages,
+the blocklist, the shift calendar, and special call handling) is configured from
+the admin dashboard after deployment. The link to the admin dashboard is provided
+in the deployment process.
 
 ## Operation
 
 ### Caller Experience
-When a Caller reaches the hotline, they will be greeted in various languages and asked to select their desired language by pressing a number.
-They will then be placed in a wait queue while the system finds an available operator.
-They will periodically hear updates while waiting.
+When a Caller reaches the hotline, they will be greeted in the supported languages and asked to select their desired language by pressing a number. 
+They will then be placed in a wait queue while the system finds an available operator. 
+They will periodically hear updates while waiting. 
+If voicemail is enabled, they will have the option to leave a message while they wait.
 
 ### Operator Experience
-Operators (called Workers in the Twilio task scheduling system) will receive a call from the hotline number.
-They will then have the Pre-Call options to press a number to accept the Call.
-If they do not, the Call will be rejected and returned to the queue to find another Operator.
+When a Caller is added to the wait queue, active Operators (called Workers in the Twilio task scheduling system) who speak the Caller's selected language will receive a call from the hotline number.
+They will hear the Pre-Call greeting menu with the option to accept the Call.
+If they do not accept the Call, the Call will be returned to the queue to find another Operator.
 
 Once a Caller and Operator are connected, they can talk!
 
-When the Caller hangs up, or the Operator presses *, the Operator will have the Post-Call options to
+When the Caller hangs up, or the Operator presses *, the Operator will have the Post-Call options to:
   * Hear the Caller's number
   * Add the Caller's number to the blocklist
   * Call the Caller back
@@ -48,7 +52,7 @@ When the Caller hangs up, or the Operator presses *, the Operator will have the 
 Once the Operator hangs up, the Call is completed, and the Operator may receive the next Call.
 
 ### Worker Schedule
-Workers set (or are given) shifts on the hotline using a shared calendar.
+Workers' shifts on the hotline are defined using a shared calendar.
 Google and Tuta are two free options, but it doesn't matter what platform you use.
 Workers may identify themselves using whatever name they wish, but it should correspond to a name that is linked to their number in the Worker Registry.
 They do not need to list their phone number in the calendar.
@@ -56,6 +60,8 @@ They do not need to list their phone number in the calendar.
 Operators can sign up to be a backup operator by putting the word "backup" or "secondary" in the event location field for their shift.
 
 Operator shift registries are stored securely in Twilio Serverless environment variables.
+
+If no shared calendar is provided, all Operators are considered active.
 
 ### Worker Registry
 Manage your registry of workers/operators from the admin dashboard (the **Operators** panel), where you can view, add, edit, and remove operators.
@@ -96,41 +102,50 @@ In order to enable WhatsApp messaging, you must first create a <a href="https://
 
 Once you have created a WhatsApp Sender for the number, you must also create a <a href="https://1console.twilio.com/us1/develop/messaging/messaging-services">Messaging Service</a>. Under the "Senders" tab, add only the WhatsApp Sender to this Messaging Service. Under the "Settings" tab, ensure that the Messaging Service "defers to the sender's webhook" for inbound messages.
 
-## Overview diagram
+## Supported Languages
 
-<img width="1426" height="859" alt="image" src="https://github.com/user-attachments/assets/34111b89-4565-4711-b548-09126cc16868" />
+The hotline currently supports the following languages:
 
-## Development notes for twilio-hotline
+- Spanish
+- English
+- Dari
+- Farsi
+- French
 
-`cd twilio-hotline`
+## Development notes
+
+Move to the root folder of the service to use Twilio's Serverless Development Toolkit: `cd twilio-hotline`
+
+#### Commands
 
 * Install Serverless Toolkit
 `twilio plugins:install @twilio-labs/plugin-serverless`
 
 * Local testing
-`twilio serverless:dev`  (or :run, or :start)
+`twilio serverless:dev`  _(or :run, or :start)_
 
 * Deploy
 `twilio serverless:deploy`
 
-* List deployments (get SID from here)
+* List deployments _(get SID from here)_
 `twilio serverless:list`
 
-* LOGS (with --tail)!
-`twilio serverless:logs --service-sid BLAH --tail`
+* Logs _(with optional --tail)_
+`twilio serverless:logs --service-sid ZS000... --tail`
 
-Remove a service:
-`twilio api:serverless:v1:services:remove --sid BLAH`
+* Remove a service
+`twilio api:serverless:v1:services:remove --sid ZS000...`
 
-Remove a build:
-`twilio api:serverless:v1:services:builds:remove --sid BLAH --service-sid BUILD_BLAH`
+* Remove a build
+`twilio api:serverless:v1:services:builds:remove --service-sid ZS000... --sid ZB000...`
 
-Remove a function:
-`twilio api:serverless:v1:services:functions:remove --service-sid BLAH --sid FUNTION_BLAH`
+* Remove a function
+`twilio api:serverless:v1:services:functions:remove --service-sid ZS000... --sid ZH000...`
 
 
 ## Features under consideration
 
+ - [ ] Allow operator shift calendar to be enabled or disabled by language
  - [ ] Allow operators to place outbound calls
  - [ ] Allow operators to respond to incoming text messages
  - [ ] Move [default Twilio data residency](https://www.twilio.com/docs/global-infrastructure) to the EU

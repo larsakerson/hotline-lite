@@ -198,6 +198,10 @@
 
 <div class="card">
   <h2>Languages</h2>
+  <p style="font-size:13px;color:#555;margin-bottom:8px">
+    The hotline can greet callers in multiple languages. This list is ordered: the first language will be offered first in the phone menu, then the second, and so on.
+    The hotline supports the following languages: <span id="supportedLanguages"></span>
+  </p>
   <div id="langList"></div>
   <div class="row">
     <input id="lCode" placeholder="fr">
@@ -459,15 +463,20 @@
         ' <span style="cursor:pointer;color:#dc2626" onclick="removeBlock(' + i + ')">&times;</span></span>';
     }).join('') : '<p style="color:#999;font-size:14px">None</p>';
 
+    $('supportedLanguages').innerHTML = Object.keys(DATA.supportedLanguages).map(function (c) {
+      let lastOne = Object.keys(DATA.supportedLanguages).indexOf(c) == Object.keys(DATA.supportedLanguages).length - 1 ? true : false;
+      return (lastOne ? ' and ' : '') + '<span>' + DATA.supportedLanguages[c] + ' (<b>' + c + '</b>)' + '</span>';
+    }).join(', ') || '<p style="color:#999;font-size:14px">No languages supported</p>';
+
     $('langList').innerHTML = DATA.languages.map(function (l, i) {
-      return '<span class="tag" style="font-size:14px;padding:4px 8px;margin:2px">' + l +
+      return '<span class="tag" style="font-size:14px;padding:4px 8px;margin:2px">' + DATA.supportedLanguages[l] +
         ' <span style="cursor:pointer;color:#dc2626" onclick="removeLang(' + i + ')">&times;</span></span>';
     }).join('') || '<p style="color:#999;font-size:14px">None</p>';
 
     $('nameList').innerHTML = DATA.languages.length ? DATA.languages.map(function (l, i) {
       var val = (DATA.hotlineName && DATA.hotlineName[i]) || '';
       return '<div class="row" style="align-items:center">' +
-        '<span class="tag" style="align-self:center">' + l + '</span>' +
+        '<span class="tag" style="align-self:center">' + DATA.supportedLanguages[l] + '</span>' +
         '<input id="name-' + i + '" value="' + escapeHtml(val) + '" placeholder="(default)">' +
         '</div>';
     }).join('') : '<p style="color:#999;font-size:14px">Add a language first</p>';
@@ -475,7 +484,7 @@
     $('waitMessageList').innerHTML = DATA.languages.length ? DATA.languages.map(function (l, i) {
       var val = (DATA.waitMessages && DATA.waitMessages[l]) || '';
       return '<div class="row" style="align-items:center">' +
-        '<span class="tag" style="align-self:center">' + l + '</span>' +
+        '<span class="tag" style="align-self:center">' + DATA.supportedLanguages[l] + '</span>' +
         '<input id="wait-message-' + l + '" value="' + escapeHtml(val) + '" placeholder="(omit custom message)">' +
         '</div>';
     }).join('') : '<p style="color:#999;font-size:14px">Add a language first</p>';
@@ -816,6 +825,7 @@
     var l = $('lCode').value.trim().toLowerCase();
     if (!l) return;
     if (DATA.languages.indexOf(l) >= 0) return showError('Language already exists');
+    if (Object.keys(DATA.supportedLanguages).indexOf(l) < 0) return showError('Language not supported');
     api({ action: 'update-languages', languages: DATA.languages.concat([l]) })
       .then(function () { $('lCode').value = ''; })
       .then(reloadStatus)

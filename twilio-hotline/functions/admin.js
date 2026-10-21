@@ -128,7 +128,22 @@ exports.handler = async function (context, event, callback) {
         console.error('usage_fetch_failed ' + (e.message || e));
       }
 
-      resp.setBody({ operators, blocklist, languages, hotlineName, connectionSequences, allowlistOnly, icsUrl, usage, autoresponderMessage, waitMessages });
+      const { langMap } = require(Runtime.getAssets()['/language.js'].path);
+      const supportedLanguages = Object.fromEntries(Object.keys(langMap).map(code => [code, langMap[code].name]));
+      
+      resp.setBody({ 
+        operators,
+        languages,
+        hotlineName,
+        supportedLanguages,
+        blocklist,
+        connectionSequences,
+        allowlistOnly,
+        icsUrl,
+        usage,
+        autoresponderMessage,
+        waitMessages
+      });
 
     } else if (event.action === 'list-sms') {
       // Twilio records inbound messages in the Messages log whether or not the

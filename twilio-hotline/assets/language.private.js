@@ -16,20 +16,21 @@
 const langMap = {
   en: { locale: 'en-US', name: 'English', voice: 'Polly.Joanna-Neural' },
   es: { locale: 'es-MX', name: 'Spanish', voice: 'Polly.Mia-Neural' },
+  fa_af: { locale: 'fa-AF', name: 'Dari', voice: 'Polly.Hala-Neural' }, // Distinct from Farsi (fa-IR)
+  fa_ir: { locale: 'fa-IR', name: 'Farsi', voice: 'Polly.Hala-Neural' }, // Distinct from Dari (fa-AF)
   fr: { locale: 'fr-FR', name: 'French', voice: 'Polly.Lea-Neural' },
-  pt: { locale: 'pt-BR', name: 'Portuguese', voice: 'Polly.Camila-Neural' },
-  ht: { locale: 'ht-HT', name: 'Haitian Creole' },
-  zh: { locale: 'zh-CN', name: 'Chinese', voice: 'Polly.Zhiyu-Neural' },  // cmn-CN (Mandarin)
-  ar: { locale: 'ar-IQ', name: 'Arabic', voice: 'Polly.Hala-Neural' },    // ar-AE (Gulf Arabic; nearest neural voice to ar-IQ)
-  ku: { locale: 'ku-IQ', name: 'Kurdish' },
-  ti: { locale: 'ti-ET', name: 'Tigrinya' },
-  sw: { locale: 'sw-KE', name: 'Swahili' },
-  uk: { locale: 'uk-UA', name: 'Ukrainian' },
-  rw: { locale: 'rw-RW', name: 'Kinyarwanda' },
-  ru: { locale: 'ru-RU', name: 'Russian' },
-  am: { locale: 'am-ET', name: 'Amharic' },
-  fa: { locale: 'fa-AF', name: 'Dari' },
-  vi: { locale: 'vi-VN', name: 'Vietnamese' },
+  // currently unsupported - pt: { locale: 'pt-BR', name: 'Portuguese', voice: 'Polly.Camila-Neural' },
+  // currently unsupported - ht: { locale: 'ht-HT', name: 'Haitian Creole' },
+  // currently unsupported - zh: { locale: 'zh-CN', name: 'Chinese', voice: 'Polly.Zhiyu-Neural' },  // cmn-CN (Mandarin)
+  // currently unsupported - ar: { locale: 'ar-IQ', name: 'Arabic', voice: 'Polly.Hala-Neural' },    // ar-AE (Gulf Arabic; nearest neural voice to ar-IQ)
+  // currently unsupported - ku: { locale: 'ku-IQ', name: 'Kurdish' },
+  // currently unsupported - ti: { locale: 'ti-ET', name: 'Tigrinya' },
+  // currently unsupported - sw: { locale: 'sw-KE', name: 'Swahili' },
+  // currently unsupported - uk: { locale: 'uk-UA', name: 'Ukrainian' },
+  // currently unsupported - rw: { locale: 'rw-RW', name: 'Kinyarwanda' },
+  // currently unsupported - ru: { locale: 'ru-RU', name: 'Russian' },
+  // currently unsupported - am: { locale: 'am-ET', name: 'Amharic' },
+  // currently unsupported - vi: { locale: 'vi-VN', name: 'Vietnamese' },
 };
 
 // Build the attributes object for a TwiML <Say>: always sets the language
@@ -54,7 +55,7 @@ const formatE164 = function (phone) {
 // This is a TwiML helper function that can be used to say a phone number in a more human-friendly way.
 // The twiml object must have a say() sub-verb. Examples include twiml itself, and twiml.gather.
 const sayLangMap = function (twiml, lang2, message, phone = "") {
-  const messageParts = message.split("{number}");
+  const messageParts = message.split("{phone number}");
   for (let i = 0; i < messageParts.length; i++) {
     const say = twiml.say(sayAttrs(lang2), messageParts[i]);
     if (i < messageParts.length - 1) {
@@ -69,8 +70,8 @@ const messagesMap = {
     name: "the community hotline",
     caller: {
       welcome: {
-        hello: "Thank you for calling {name}.",
-        menu: "Press {number} for English.",
+        hello: "Thank you for calling {hotline name}.",
+        menu: "Press {key} for English.",
         goodbye: "Goodbye.",
       },
       wait: {
@@ -83,9 +84,9 @@ const messagesMap = {
     },
     operator: {
       precall: {
-        intro: "This is a call from {name}. Press any key to accept the call.",
-        introNamed: "This is a call from {caller}, through {name}. Press any key to accept the call.",
-        noResponse: "You didn't respond, so we're moving on to another operator. This call was from {number}.",
+        intro: "This is a call from {hotline name}. Press any key to accept the call.",
+        introNamed: "This is a call from {caller name}, through {hotline name}. Press any key to accept the call.",
+        noResponse: "You didn't respond, so we're moving on to another operator. This call was from {phone number}.",
         reservationStatus: {
           rescinded: "Another operator answered this call.",
           canceled: "The caller hung up.",
@@ -94,9 +95,9 @@ const messagesMap = {
       },
       postcall: {
         options: "Call finished. Press 1 to repeat the caller's number. Press 2 to add the caller to the blocklist. Press 3 to call the caller back.",
-        callerNumber: "This call was from {number}.",
-        blocking: "Blocking calls from {number}.",
-        callingBack: "Calling {number}.",
+        callerNumber: "This call was from {phone number}.",
+        blocking: "Blocking calls from {phone number}.",
+        callingBack: "Calling {phone number}.",
       }
     }
   },
@@ -104,8 +105,8 @@ const messagesMap = {
     name: "la línea comunitaria",
     caller: {
       welcome: {
-        hello: "Gracias por llamar a {name}.",
-        menu: "Presione {number} para español.",
+        hello: "Gracias por llamar a {hotline name}.",
+        menu: "Presione {key} para español.",
         goodbye: "Cuídese.",
       },
       wait: {
@@ -118,9 +119,9 @@ const messagesMap = {
     },
     operator: {
       precall: {
-        intro: "Esta es una llamada de {name}. Presione cualquier tecla para aceptar la llamada.",
-        introNamed: "Esta es una llamada de {caller}, a través de {name}. Presione cualquier tecla para aceptar la llamada.",
-        noResponse: "No respondió, así que pasamos a otro operador. Esta llamada era de {number}.",
+        intro: "Esta es una llamada de {caller name}. Presione cualquier tecla para aceptar la llamada.",
+        introNamed: "Esta es una llamada de {caller name}, a través de {hotline name}. Presione cualquier tecla para aceptar la llamada.",
+        noResponse: "No respondió, así que pasamos a otro operador. Esta llamada era de {phone number}.",
         reservationStatus: {
           rescinded: "Otre operador respondió a esta llamada.",
           canceled: "La persona en espera terminó la llamada.",
@@ -129,9 +130,121 @@ const messagesMap = {
       },
       postcall: {
         options: "Llamada finalizada. Presione 1 para escuchar el número de nuevo. Presione 2 para bloquearlo. Presione 3 para marcarlo de nuevo.",
-        callerNumber: "Esta llamada era de {number}.",
-        blocking: "Se bloquearon llamadas de {number}.",
-        callingBack: "Marcando {number}.",
+        callerNumber: "Esta llamada era de {phone number}.",
+        blocking: "Se bloquearon llamadas de {phone number}.",
+        callingBack: "Marcando {phone number}.",
+      }
+    }
+  },
+  fa_af: {
+    name: "خط تماس جامعه",
+    caller: {
+      welcome: {
+        hello: "از تماس با {hotline name} سپاسگزاریم.",
+        menu: "برای دری روی کلید{key} را فشار دهید.",
+        goodbye: "خداحافظ.",
+      },
+      wait: {
+        connecting: "به زودی با شما تماس گرفته خواهد شد.",
+        leaveAMessage: "لطفاً در خط بمانید یا هر کلیدی را فشار دهید تا پیامی بگذارید.",
+      },
+      record: {
+        prompt: "لطفاً پس از صدای زنگ پیامی بگذارید.",
+      }
+    },
+    operator: {
+      precall: {
+        intro: "این تماس از {hotline name} است. برای پذیرش تماس، هر کلیدی را فشار دهید.",
+        introNamed: "این تماس از {caller name} است, از طریق {hotline name}. برای پذیرش تماس, هر کلیدی را فشار دهید.",
+        noResponse: "شما پاسخ ندادید, بنابراین ما به اپراتور دیگری میرویم. این تماس از {phone number} بود.",
+        reservationStatus: {
+          rescinded: "اپراتور دیگری به این تماس پاسخ داد.",
+          canceled: "تماس را قطع کرد.",
+          default: "کسی دیگر پاسخ داد یا تماس قطع شد.",
+        }
+      },
+      postcall: {
+        options: "تماس تمام شد. کلید 1 را فشار دهید تا شماره مکالمه را دوباره بشنوید. کلید 2 را فشار دهید تا مکالمه را به لیست بلاک اضافه کنید. کلید 3 را فشار دهید تا مکالمه را دوباره برقرار کنید.",
+        callerNumber: "این تماس از {phone number} بود.",
+        blocking: "مکالمات از {phone number} را مسدود می‌کنم.",
+        callingBack: "در حال تماس با {phone number}.",
+      }
+    }
+  },
+  fa_ir: {
+    name: "خط تماس جامعه",
+    caller: {
+      welcome: {
+        hello: "از تماس با {hotline name} سپاسگزاریم.",
+        menu: "برای فارسی، کلید {key} را فشار دهید.",
+        goodbye: "خداحافظ.",
+      },
+      wait: {
+        connecting: "به زودی با شما تماس گرفته خواهد شد.",
+        leaveAMessage: "لطفاً در خط بمانید یا هر کلیدی را فشار دهید تا پیامی بگذارید.",
+      },
+      record: {
+        prompt: "لطفاً پس از صدای زنگ پیامی بگذارید.",
+      }
+    },
+    operator: {
+      precall: {
+        intro: "این تماس از {hotline name} است. برای پذیرش تماس، هر کلیدی را فشار دهید.",
+        introNamed: "این تماس از {caller name} است, از طریق {hotline name}. برای پذیرش تماس, هر کلیدی را فشار دهید.",
+        noResponse: "شما پاسخ ندادید, بنابراین ما به اپراتور دیگری میرویم. این تماس از {phone number} بود.",
+        reservationStatus: {
+          rescinded: "اپراتور دیگری به این تماس پاسخ داد.",
+          canceled: "تماس را قطع کرد.",
+          default: "کسی دیگر پاسخ داد یا تماس قطع شد.",
+        }
+      },
+      postcall: {
+        options: "تماس تمام شد. کلید 1 را فشار دهید تا شماره مکالمه را دوباره بشنوید. کلید 2 را فشار دهید تا مکالمه را به لیست بلاک اضافه کنید. کلید 3 را فشار دهید تا مکالمه را دوباره برقرار کنید.",
+        callerNumber: "این تماس از {phone number} بود.",
+        blocking: "مکالمات از {phone number} را مسدود می‌کنم.",
+        callingBack: "در حال تماس با {phone number}.",
+      }
+    }
+  },
+  fr: {
+    name: "la ligne communautaire",
+    caller: {
+      welcome: {
+        hello: "Merci d'avoir appelé {hotline name}.",
+        menu: "Appuyez sur {key} pour français.",
+        goodbye: "Prenez soin de vous.",
+      },
+      wait: {
+        connecting: "Quelqu'un va venir vous voir d'ici peu.",
+        connecting: "Quelqu'un sera avec vous sous peu.",
+        leaveAMessage: "Veuillez rester en ligne ou appuyez sur n'importe quelle touche pour laisser un message.",
+      },
+      noOperators: {
+        sorry: "Désolé, aucun opérateur parlant français n'est disponible.",
+        messageOrLanguage: "Restez en ligne pour laisser un message, ou appuyez sur n'importe quelle touche pour choisir une autre langue.",
+        message: "Restez en ligne pour laisser un message.",
+        language: "Appuyez sur n'importe quelle touche pour choisir une autre langue.",
+      },
+      record: {
+        prompt: "Veuillez laisser un message après le bip sonore.",
+      }
+    },
+    operator: {
+      precall: {
+        intro: "Ceci est un appel de {hotline name}. Appuyez sur n'importe quelle touche pour accepter l'appel.",
+        introNamed: "Ceci est un appel de {caller name}, via {hotline name}. Appuyez sur n'importe quelle touche pour accepter l'appel.",
+        noResponse: "Aucune réponse, nous passons donc à un autre opérateur. Cet appel provenait de {phone number}.",
+        reservationStatus: {
+          rescinded: "Un autre opérateur a répondu à cet appel.",
+          canceled: "La personne en attente a terminé l'appel.",
+          default: "L'appel a été terminé.",
+        }
+      },
+      postcall: {
+        options: "Appel terminé. Appuyez sur 1 pour écouter le numéro à nouveau. Appuyez sur 2 pour le bloquer. Appuyez sur 3 pour le rappeler.",
+        callerNumber: "Cet appel provenait de {phone number}.",
+        blocking: "Les appels de {phone number} ont été bloqués.",
+        callingBack: "Rappel de {phone number}.",
       }
     }
   }
