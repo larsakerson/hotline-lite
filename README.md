@@ -19,7 +19,7 @@ A simple, privacy-first Twilio-based hotline. Key features include:
 
 ## Setup
 
-1. Install twilio CLI: https://www.twilio.com/docs/twilio-cli/getting-started/install
+1. Install the [Twilio CLI](https://www.twilio.com/docs/twilio-cli/getting-started/install)
 2. Clone this repo: `gh repo clone larsakerson/hotline-lite`
 3. Run the setup script: `./setup_hotline.sh`
 
@@ -112,6 +112,14 @@ The hotline currently supports the following languages:
 - Farsi
 - French
 
+## Features under consideration
+
+ - [ ] Support for additional languages
+ - [ ] Allow operator shift calendar to be enabled or disabled by language
+ - [ ] Allow operators to place outbound calls
+ - [ ] Allow operators to respond to incoming text messages
+ - [ ] Move [default Twilio data residency](https://www.twilio.com/docs/global-infrastructure) to the EU
+
 ## Development notes
 
 Move to the root folder of the service to use Twilio's Serverless Development Toolkit: `cd twilio-hotline`
@@ -141,11 +149,3 @@ Move to the root folder of the service to use Twilio's Serverless Development To
 
 * Remove a function
 `twilio api:serverless:v1:services:functions:remove --service-sid ZS000... --sid ZH000...`
-
-
-## Features under consideration
-
- - [ ] Allow operator shift calendar to be enabled or disabled by language
- - [ ] Allow operators to place outbound calls
- - [ ] Allow operators to respond to incoming text messages
- - [ ] Move [default Twilio data residency](https://www.twilio.com/docs/global-infrastructure) to the EU
