@@ -1,3 +1,5 @@
+!context.DEBUG || context.DEBUG == '0' ? console.log = console.warn = () => {} : '';
+
 const checkReservationStatus = async function (context, event) {
     const client = context.getTwilioClient();
     const reservation = await client.taskrouter.v1

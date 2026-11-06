@@ -1,4 +1,6 @@
 exports.handler = async function (context, event, callback) {
+  !context.DEBUG || context.DEBUG == '0' ? console.log = console.warn = () => {} : '';
+  
   // Has the Signal integration been configured? If not, we stop right here.
   // The presence of a group key is a proxy for a functional Signal dropbox.
   const signalConfigured = !!context.GROUP_KEY;
@@ -23,7 +25,7 @@ exports.handler = async function (context, event, callback) {
   // If the sender is on the blocklist, or if we're in allowlist-only mode
   // and the sender isn't on the allowlist, we ignore the message.
   if (blocklist.includes(sender) || (allowlistOnly && !callerSequence)) {
-    console.log('Ignoring message from blocked or unallowed number:', sender);
+    console.log('Ignoring message from blocked or unallowed number', sender);
     return callback(null, '');
   }
 

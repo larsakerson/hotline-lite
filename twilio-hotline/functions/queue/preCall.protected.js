@@ -1,9 +1,9 @@
 exports.handler = function (context, event, callback) {
-  //console.log("PRECALL " + event.taskSid + " " + event.reservationSid + " " + event.language + " " + event.callerFrom);
-  const { sayLangMap, loadMessages, renderCallMessage } = require(Runtime.getAssets()['/language.js'].path);
+  !context.DEBUG || context.DEBUG == '0' ? console.log = console.warn = () => {} : '';
 
-  const twiml = new Twilio.twiml.VoiceResponse();
+  const { sayLangMap, loadMessages, renderCallMessage } = require(Runtime.getAssets()['/language.js'].path);
   
+  const twiml = new Twilio.twiml.VoiceResponse();
   const messages = loadMessages([event.language])[event.language];
   const languages = (context.LANGUAGES || 'es,en').split(',');
   // Fall back to the built-in name when HOTLINE_NAME has no entry for this language.

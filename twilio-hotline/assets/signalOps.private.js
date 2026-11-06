@@ -6,6 +6,8 @@ const path = require('path');
 const crypto = require('crypto');
 const { loadDb, persistDb, resetKeystore } = require(Runtime.getAssets()['/syncStore.js'].path);
 
+!context.DEBUG || context.DEBUG == '0' ? console.log = console.warn = () => {} : '';
+
 // Production loader. For local dev: '/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2'.
 const LD = '/bin/ld.so';
 

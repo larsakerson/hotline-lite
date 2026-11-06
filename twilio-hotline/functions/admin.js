@@ -41,6 +41,7 @@ const USAGE_CATEGORIES = [
 const SMS_LIMIT = 20;
 
 exports.handler = async function (context, event, callback) {
+  !context.DEBUG || context.DEBUG == '0' ? console.log = console.warn = () => {} : '';
   const resp = new Twilio.Response();
   resp.appendHeader('Content-Type', 'application/json');
 
@@ -100,6 +101,8 @@ exports.handler = async function (context, event, callback) {
       let waitMessages = {};
       if (obj && Object.keys(obj).length) { try { waitMessages = JSON.parse(obj.value); } catch { waitMessages = []; } }
       if (typeof waitMessages !== 'object' || Array.isArray(waitMessages) || waitMessages === null) waitMessages = [];
+      const qlv = vars.find(v => v.key === 'DEBUG');
+      const quietLogs = qlv ? qlv.value : '';
 
       // Usage summary for the dashboard. Isolated so a usage-API failure leaves
       // the rest of the status payload intact. The base records resource defaults
@@ -136,7 +139,7 @@ exports.handler = async function (context, event, callback) {
       const incompleteLanguages = Object.fromEntries(Object.entries(incomplete)
         .map(([code, missing]) => [code, { name: langMap[code].name, missing }]));
 
-      resp.setBody({ operators, blocklist, languages, supportedLanguages, incompleteLanguages, hotlineName, connectionSequences, allowlistOnly, icsUrl, usage });
+      resp.setBody({ operators, blocklist, languages, supportedLanguages, incompleteLanguages, hotlineName, connectionSequences, autoresponderMessage, allowlistOnly, icsUrl, usage, quietLogs });
 
     } else if (event.action === 'list-sms') {
       // Twilio records inbound messages in the Messages log whether or not the
@@ -192,6 +195,13 @@ exports.handler = async function (context, event, callback) {
       const v = vars.find(v => v.key === 'BLOCKLIST');
       if (v) await env.variables(v.sid).update({ value });
       else await env.variables.create({ key: 'BLOCKLIST', value });
+      resp.setBody({ ok: true });
+
+    } else if (event.action === 'update-log-level') {
+      const value = event.debug ? '1' : '0';
+      const v = vars.find(v => v.key === 'DEBUG');
+      if (v) await env.variables(v.sid).update({ value });
+      else await env.variables.create({ key: 'DEBUG', value });
       resp.setBody({ ok: true });
 
     } else if (event.action === 'update-languages') {

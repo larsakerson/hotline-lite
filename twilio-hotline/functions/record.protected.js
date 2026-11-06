@@ -1,4 +1,6 @@
 exports.handler = async function (context, event, callback) {
+  !context.DEBUG || context.DEBUG == '0' ? console.log = console.warn = () => {} : '';
+  
   const { sayLangMap, loadMessages } = require(Runtime.getAssets()['/language.js'].path);
   const messages = loadMessages([event.language])[event.language];
   console.log("QueueResult " + event.QueueResult);

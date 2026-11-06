@@ -1,4 +1,6 @@
 exports.handler = function (context, event, callback) {
+  !context.DEBUG || context.DEBUG == '0' ? console.log = console.warn = () => {} : '';
+
   // console.log("ASSIGNMENT " + event.ReservationSid);
   const workerAttributes = JSON.parse(event.WorkerAttributes);
   const taskAttributes = JSON.parse(event.TaskAttributes);

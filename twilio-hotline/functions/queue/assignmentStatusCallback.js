@@ -1,5 +1,7 @@
 // NOTE: assignmentStatusCallback has to be public, for some reason!
 exports.handler = async function (context, event, callback) {
+  !context.DEBUG || context.DEBUG == '0' ? console.log = console.warn = () => {} : '';
+
   console.log("AssignmentStatusCallback " + event.taskSid); // NOTE: Lower case t! Manually added in the "call" instruction.
   const client = context.getTwilioClient();
   await client.taskrouter.v1

@@ -135,6 +135,12 @@ In order to enable WhatsApp messaging, you must first create a <a href="https://
 
 Once you have created a WhatsApp Sender for the number, you must also create a <a href="https://1console.twilio.com/us1/develop/messaging/messaging-services">Messaging Service</a>. Under the "Senders" tab, add only the WhatsApp Sender to this Messaging Service. Under the "Settings" tab, ensure that the Messaging Service "defers to the sender's webhook" for inbound messages.
 
+## Logging
+
+By design, the hotline retains only 1 hour of call logs and 7 days of messaging logs. 
+The system also creates some debugging logs. Twilio does not permit deletion of system logs, 
+but you can avoid creating non-error system logs by enabling Quiet Logging in the admin dashboard.
+
 ## Features under consideration
 
  - [ ] Support for additional languages

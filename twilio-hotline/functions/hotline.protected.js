@@ -1,5 +1,6 @@
-
 exports.handler = async function (context, event, callback) {
+  !context.DEBUG || context.DEBUG == '0' ? console.log = console.warn = () => {} : '';
+  
   const { sayAttrs, sayLangMap, loadMessages, renderCallMessage } = require(Runtime.getAssets()['/language.js'].path);
   const { updateWorkers } = require(Runtime.getAssets()['/updateWorkers.js'].path);
   // LANGUAGES is dashboard-managed and may be unset on a fresh install (before an

@@ -1,4 +1,6 @@
 exports.handler = async function (context, event, callback) {
+  !context.DEBUG || context.DEBUG == '0' ? console.log = console.warn = () => {} : '';
+  
   console.log('/recordingStatusCallback ' + event.RecordingUrl);
   const { langMap, formatE164 } = require(Runtime.getAssets()['/language.js'].path);
   const { notify, prepareAttachment } = require(Runtime.getAssets()['/notify.js'].path);

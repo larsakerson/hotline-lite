@@ -1,5 +1,6 @@
 exports.handler = async function (context, event, callback) {
-  //console.log("POSTCALL " + event.taskSid + " " + event.language + " " + event.callerFrom);
+  !context.DEBUG || context.DEBUG == '0' ? console.log = console.warn = () => {} : '';
+  
   const { sayAttrs, sayLangMap, loadMessages } = require(Runtime.getAssets()['/language.js'].path);
   const messages = loadMessages([event.language])[event.language];
   const twiml = new Twilio.twiml.VoiceResponse();

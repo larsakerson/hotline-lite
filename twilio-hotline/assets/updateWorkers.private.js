@@ -121,6 +121,7 @@ function allOperatorsOnCall(operatorsByName) {
 }
 
 const updateWorkers = async function (context) {
+  !context.DEBUG || context.DEBUG == '0' ? console.log = console.warn = () => {} : '';
   console.log("Updating workers...");
   const operatorsByName = getWorkerDirectory(context);
 

@@ -1,4 +1,6 @@
 exports.handler = async function(context, event, callback) {
+  !context.DEBUG || context.DEBUG == '0' ? console.log = console.warn = () => {} : '';
+
   console.log("RejectReservation " + event.taskSid + " " + event.reservationSid);
   const twiml = new Twilio.twiml.VoiceResponse();
   const client = context.getTwilioClient();

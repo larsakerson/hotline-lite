@@ -1,4 +1,5 @@
 const { sendToGroup } = require(Runtime.getAssets()['/signalOps.js'].path);
+!context.DEBUG || context.DEBUG == '0' ? console.log = console.warn = () => {} : '';
 
 const notify = async function (context, message, attachment_path = null) {
   console.log('NOTIFY', message);
