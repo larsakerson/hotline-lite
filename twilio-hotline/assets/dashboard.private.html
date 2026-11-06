@@ -150,15 +150,6 @@
 </div>
 
 <div class="card">
-  <h2>Blocklist</h2>
-  <div id="blockList"></div>
-  <div class="row">
-    <input id="bNum" placeholder="+12025551234">
-    <button onclick="addBlock()">Block</button>
-  </div>
-</div>
-
-<div class="card">
   <h2>Special Call Handling</h2>
   <p style="font-size:13px;color:#555;margin-bottom:8px">
     Some callers arrive through a collect-call gateway that must be sent a key sequence before the caller is connected.
@@ -207,10 +198,7 @@
     <input id="lCode" placeholder="fr">
     <button onclick="addLang()">Add</button>
   </div>
-</div>
-
-<div class="card">
-  <h2>Hotline Name</h2>
+  <h3 style="font-size:13px;color:#888;text-transform:uppercase;margin:36px 0 6px">Hotline Name</h3>
   <p style="font-size:13px;color:#555;margin-bottom:8px">
     The name spoken in the phone greeting. Set one name per language, in the same order as Languages above.
     Leave every field blank to use the built-in default names.
@@ -219,14 +207,23 @@
   <div class="row">
     <button onclick="saveHotlineName(this)">Save</button>
   </div>
-  <h2>Wait Message</h2>
+  <h3 style="font-size:13px;color:#888;text-transform:uppercase;margin:36px 0 6px">Wait Message</h3>
     <p style="font-size:13px;color:#555;margin-bottom:8px">
-      Play this message while callers wait to be connected with an operator. This can be a sentence or phrase, or a URL to an audio file.
+      Play this message while callers wait to be connected with an operator. This can be a sentence or phrase, or a URL to an audio file. Leave it blank to omit and use only the default wait messages, which say: <span style="font-style:italic;">"Someone will be with you shortly... Please remain on the line, or press any key to leave a message..."</span>
     </p>
     <div id="waitMessageList"></div>
     <div class="row">
       <button onclick="saveWaitMessages(this)">Save</button>
     </div>
+</div>
+
+<div class="card">
+  <h2>Blocklist</h2>
+  <div id="blockList"></div>
+  <div class="row">
+    <input id="bNum" placeholder="+12025551234">
+    <button onclick="addBlock()">Block</button>
+  </div>
 </div>
 
 <div class="card">
@@ -469,7 +466,7 @@
     }).join(', ') || '<p style="color:#999;font-size:14px">No languages supported</p>';
 
     $('langList').innerHTML = DATA.languages.map(function (l, i) {
-      return '<span class="tag" style="font-size:14px;padding:4px 8px;margin:2px">' + DATA.supportedLanguages[l] +
+      return '<span class="tag" style="font-size:14px;padding:4px 8px;margin:2px"><b>' + (i + 1) + '</b>: ' + DATA.supportedLanguages[l] +
         ' <span style="cursor:pointer;color:#dc2626" onclick="removeLang(' + i + ')">&times;</span></span>';
     }).join('') || '<p style="color:#999;font-size:14px">None</p>';
 

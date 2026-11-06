@@ -44,14 +44,30 @@ If they do not accept the Call, the Call will be returned to the queue to find a
 
 Once a Caller and Operator are connected, they can talk!
 
-When the Caller hangs up, or the Operator presses *, the Operator will have the Post-Call options to:
+When the Caller hangs up, or the Operator presses the `*` key to end the call, the Operator will have the Post-Call options to:
   * Hear the Caller's number
   * Add the Caller's number to the blocklist
   * Call the Caller back
 
 Once the Operator hangs up, the Call is completed, and the Operator may receive the next Call.
 
-### Worker Schedule
+### Admin Interface
+The hotline includes a password-protected web admin interface for managing operators, blocklists, and supported languages. After deployment, access it at your Twilio Serverless URL's `/admin.html` endpoint.
+
+The admin password is set during initial setup (via `ADMIN_PASSWORD` in the environment variables). Authentication uses HMAC-SHA1 tokens stored in the browser's session storage.
+
+From the admin dashboard you can manage:
+  * **Operators** -- View, add, edit, and remove operators (with name, phone number, and language support)
+  * **Blocklist** -- Add or remove blocked phone numbers
+  * **Languages** -- Add or remove supported languages for the caller greeting
+  * **Special Call Handling** -- Define key sequences to auto-accept collect-style calls from specific numbers, and optionally restrict the hotline to accept calls only from those numbers. Each number can also have a name, which operators hear before accepting the call, and a language, which skips the language menu for that number
+
+All data is stored securely in Twilio Serverless environment variables.
+
+### Worker Registry
+Manage your registry of workers/operators from the admin dashboard (the **Operators** panel), where you can view, add, edit, and remove operators.
+
+### Worker Scheduling
 Workers' shifts on the hotline are defined using a shared calendar.
 Google and Tuta are two free options, but it doesn't matter what platform you use.
 Workers may identify themselves using whatever name they wish, but it should correspond to a name that is linked to their number in the Worker Registry.
@@ -63,24 +79,8 @@ Operator shift registries are stored securely in Twilio Serverless environment v
 
 If no shared calendar is provided, all Operators are considered active.
 
-### Worker Registry
-Manage your registry of workers/operators from the admin dashboard (the **Operators** panel), where you can view, add, edit, and remove operators.
-
-### Admin Interface
-The hotline includes a password-protected web admin interface for managing operators, blocklists, and supported languages. After deployment, access it at your Twilio Serverless URL's `/admin.html` endpoint.
-
-The admin password is set during initial setup (via `ADMIN_PASSWORD` in the environment variables). Authentication uses HMAC-SHA1 tokens stored in the browser's session storage.
-
-From the admin dashboard you can:
-  * **Operators** -- View, add, edit, and remove operators (with name, phone number, and language support)
-  * **Blocklist** -- Add or remove blocked phone numbers
-  * **Languages** -- Add or remove supported languages for the caller greeting
-  * **Special Call Handling** -- Define key sequences to auto-accept collect-style calls from specific numbers, and optionally restrict the hotline to accept calls only from those numbers. Each number can also have a name, which operators hear before accepting the call, and a language, which skips the language menu for that number
-
-All data is stored securely in Twilio Serverless environment variables.
-
 ### Blocklist
-Manage the blocklist from the admin dashboard (the **Blocklist** panel). Operators can also add a caller's number to the blocklist at the end of a call.
+Manage the blocklist from the admin dashboard (the **Blocklist** panel). Operators can also add a caller's number to the blocklist at the end of a call. When messaging is enabled, text messages from numbers on the blocklist will not be forwarded to the hotline inbox.
 
 ## Cost
 
