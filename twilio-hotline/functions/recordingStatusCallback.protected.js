@@ -1,5 +1,8 @@
 exports.handler = async function (context, event, callback) {
-  console.log('/recordingStatusCallback ' + event.RecordingUrl);
+  const { setLogLevel } = require(Runtime.getAssets()['/logging.js'].path);
+  setLogLevel(context);
+  
+  console.debug('/recordingStatusCallback ' + event.RecordingUrl);
   const { langMap, formatE164 } = require(Runtime.getAssets()['/language.js'].path);
   const { notify, prepareAttachment } = require(Runtime.getAssets()['/notify.js'].path);
 

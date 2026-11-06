@@ -41,6 +41,8 @@ const USAGE_CATEGORIES = [
 const SMS_LIMIT = 20;
 
 exports.handler = async function (context, event, callback) {
+  const { setLogLevel } = require(Runtime.getAssets()['/logging.js'].path);
+  setLogLevel(context);
   const resp = new Twilio.Response();
   resp.appendHeader('Content-Type', 'application/json');
 
@@ -199,6 +201,13 @@ exports.handler = async function (context, event, callback) {
       const v = vars.find(v => v.key === 'BLOCKLIST');
       if (v) await env.variables(v.sid).update({ value });
       else await env.variables.create({ key: 'BLOCKLIST', value });
+      resp.setBody({ ok: true });
+
+    } else if (event.action === 'update-log-level') {
+      const value = event.debug ? '1' : '0';
+      const v = vars.find(v => v.key === 'DEBUG');
+      if (v) await env.variables(v.sid).update({ value });
+      else await env.variables.create({ key: 'DEBUG', value });
       resp.setBody({ ok: true });
 
     } else if (event.action === 'update-languages') {
@@ -450,7 +459,7 @@ exports.handler = async function (context, event, callback) {
       try {
         const loaded = await syncStore.loadDb(syncSvc, tmpPath);
         const bytes = fsMod.readFileSync(tmpPath);
-        console.log(`[signal-download-db] exported ${bytes.length} bytes from slot ${loaded.loadedSlot}`);
+        console.debug(`[signal-download-db] exported ${bytes.length} bytes from slot ${loaded.loadedSlot}`);
         resp.setBody({ ok: true, bytes: bytes.length, dbBase64: bytes.toString('base64') });
       } finally {
         try { fsMod.unlinkSync(tmpPath); } catch { /* ignore */ }
@@ -491,7 +500,7 @@ exports.handler = async function (context, event, callback) {
         );
         if (pruneRes.stderr) {
           for (const line of pruneRes.stderr.split('\n').filter(Boolean)) {
-            console.log(`[signal-upload-db prune-cache] ${line}`);
+            console.debug(`[signal-upload-db prune-cache] ${line}`);
           }
         }
         if (pruneRes.status !== 0) {
@@ -512,7 +521,7 @@ exports.handler = async function (context, event, callback) {
           if (e.status !== 404) throw e;
         }
         const persistResult = await syncStore.persistDb(syncSvc, tmpPath, prev);
-        console.log(`[signal-upload-db] imported ${buf.length} -> pruned ${prunedBytes} bytes into slot ${persistResult.slot}`);
+        console.debug(`[signal-upload-db] imported ${buf.length} -> pruned ${prunedBytes} bytes into slot ${persistResult.slot}`);
         resp.setBody({ ok: true, uploadedBytes: buf.length, prunedBytes, ...persistResult });
       } finally {
         for (const p of [tmpPath, `${tmpPath}-wal`, `${tmpPath}-shm`, `${tmpPath}-journal`]) {

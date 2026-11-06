@@ -1,3 +1,6 @@
+const { setLogLevel } = require(Runtime.getAssets()['/logging.js'].path);
+setLogLevel(context);
+
 const checkReservationStatus = async function (context, event) {
     const client = context.getTwilioClient();
     const reservation = await client.taskrouter.v1
@@ -13,7 +16,7 @@ const checkReservationStatus = async function (context, event) {
     // If the caller hangs up, the reservation status will change to "canceled."
     // If another worker accepted the task first, the reservation status will be "rescinded."
     if (reservation.reservationStatus !== 'pending') {
-        console.log("Reservation " + reservation.reservationSid + " no longer pending (" + reservation.reservationStatus + "), exiting.");
+        console.debug("Reservation " + reservation.reservationSid + " no longer pending (" + reservation.reservationStatus + "), exiting.");
         return reservation.reservationStatus;
     }
 }

@@ -1,5 +1,6 @@
 const axios = require('axios');
 const ical = require('node-ical');
+const { setLogLevel } = require(Runtime.getAssets()['/logging.js'].path);
 
 // Get all events occurring at the current time
 function getEventsNow(ics) {
@@ -121,7 +122,8 @@ function allOperatorsOnCall(operatorsByName) {
 }
 
 const updateWorkers = async function (context) {
-  console.log("Updating workers...");
+  setLogLevel(context);
+  console.debug("Updating workers...");
   const operatorsByName = getWorkerDirectory(context);
 
   // ICS_URL is optional: the dashboard lets an admin clear it to turn off
@@ -140,7 +142,7 @@ const updateWorkers = async function (context) {
       return;
     }
   } else {
-    console.log("No ICS_URL configured; treating all operators as on call.");
+    console.debug("No ICS_URL configured; treating all operators as on call.");
     operatorsOnCall = allOperatorsOnCall(operatorsByName);
   }
 
@@ -164,7 +166,7 @@ const updateWorkers = async function (context) {
     let workerExists = false;
     const operatorName = Object.keys(operatorsOnCall)[i];
     if (!(operatorName in operatorsByName)) {
-      console.log(`Operator ${operatorName} is scheduled but not in the worker directory; skipping.`);
+      console.debug(`Operator ${operatorName} is scheduled but not in the worker directory; skipping.`);
       continue;
     }
     const friendlyName = 'worker' + operatorsByName[operatorName]['phone'].slice(-4);
@@ -217,7 +219,7 @@ const updateWorkers = async function (context) {
         .remove();
     }
   }
-  console.log("Done updating workers");
+  console.debug("Done updating workers");
 
   // Return a set of the languages with coverage now
   return languagesNow;

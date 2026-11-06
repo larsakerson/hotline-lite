@@ -1,4 +1,7 @@
 exports.handler = async function (context, event, callback) {
+  const { setLogLevel } = require(Runtime.getAssets()['/logging.js'].path);
+  setLogLevel(context);
+  
   // Has the Signal integration been configured? If not, we stop right here.
   // The presence of a group key is a proxy for a functional Signal dropbox.
   const signalConfigured = !!context.GROUP_KEY;
@@ -23,7 +26,7 @@ exports.handler = async function (context, event, callback) {
   // If the sender is on the blocklist, or if we're in allowlist-only mode
   // and the sender isn't on the allowlist, we ignore the message.
   if (blocklist.includes(sender) || (allowlistOnly && !callerSequence)) {
-    console.log('Ignoring message from blocked or unallowed number:', sender);
+    console.debug('Ignoring message from blocked or unallowed number', sender);
     return callback(null, '');
   }
 
@@ -31,7 +34,7 @@ exports.handler = async function (context, event, callback) {
   // Instead, we just log it and return a success response.
   const pattern = /code[^0-9]{0,40}((\d{3})[-\s]?(\d{3})|(\d{4}))/i;
   if (pattern.test(event.Body)) {
-    console.log('Ignoring confirmation code message from:', event.From);
+    console.debug('Ignoring confirmation code message from:', event.From);
     return callback(null, '');
   }
 
@@ -51,7 +54,7 @@ exports.handler = async function (context, event, callback) {
       let filename = `${crypto.randomUUID()}_attachment_${i + 1}.${extension}`;
       mediaUrls.push({ url: event[`MediaUrl${i}`], contentType: contentType, filename: filename });
     }
-    console.log('Found', mediaUrls.length, 'media attachment(s) in message from', sender, 'with content types:', mediaUrls.map(m => m.contentType).join(', '));
+    console.debug('Found', mediaUrls.length, 'media attachment(s) in message from', sender, 'with content types:', mediaUrls.map(m => m.contentType).join(', '));
   }
 
   const { notify, prepareAttachment } = require(Runtime.getAssets()['/notify.js'].path);
@@ -91,14 +94,14 @@ exports.handler = async function (context, event, callback) {
       from: event.To, 
       dateSentAfter: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) });
     recentRecipients = [...new Set(recentOutboundMessages.map(m => m.to))];
-    console.log('Recent recipients of messages from', event.To, 'in the last 7 days:', recentRecipients);
+    console.debug('Recent recipients of messages from', event.To, 'in the last 7 days:', recentRecipients);
     if (!recentRecipients.includes(event.From)) {
       await twilioClient.messages.create({
         from: event.To,
         to: event.From,
         body: autoresponderMessage
       });
-      console.log('Sent autoresponder message from', event.To, 'to', event.From, 'with body:', autoresponderMessage);
+      console.debug('Sent autoresponder message from', event.To, 'to', event.From, 'with body:', autoresponderMessage);
     }
   }
 

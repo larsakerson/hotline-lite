@@ -227,6 +227,17 @@
 </div>
 
 <div class="card">
+  <h2>Logging</h2>
+  <p style="font-size:13px;color:#555;margin-bottom:8px">
+    The hotline retains 1 hour of call logs and 7 days of messaging logs. The system also creates minimal logs for debugging. Twilio does not permit deletion of these system logs, but you can avoid creating non-error logs by checking the box below.
+  </p>
+  <div class="row">
+    <input type="checkbox" id="debugLogs" value="1" onchange="saveLogLevel(this)">
+    <label for="debugLogs">Quiet logging</label>
+  </div>
+</div>
+
+<div class="card">
   <h2>Signal</h2>
   <div id="sigStatus" style="font-size:13px;color:#555;margin-bottom:8px">Checking...</div>
 
@@ -816,6 +827,15 @@
     api({ action: 'update-blocklist', blocklist: DATA.blocklist.filter(function (_, j) { return j !== i; }) })
       .then(reloadStatus)
       .catch(catcher('Unblock number'));
+  };
+
+  window.saveLogLevel = function (btn) {
+    var logLevel = parseInt($('debugLogs').value, 10) || 0;
+    withButton(btn, 'Saving...', function () {
+      return api({ action: 'update-log-level', debug: logLevel })
+        .then(reloadStatus)
+        .catch(catcher('Saving log level'));
+    });
   };
 
   window.addLang = function () {

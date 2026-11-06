@@ -1,5 +1,8 @@
 exports.handler = function (context, event, callback) {
-  // console.log("ASSIGNMENT " + event.ReservationSid);
+  const { setLogLevel } = require(Runtime.getAssets()['/logging.js'].path);
+  setLogLevel(context);
+
+  // console.debug("ASSIGNMENT " + event.ReservationSid);
   const workerAttributes = JSON.parse(event.WorkerAttributes);
   const taskAttributes = JSON.parse(event.TaskAttributes);
   // We use instruction : "call" rather than "dequeue" so that we can offer the preCall interaction.

@@ -1,4 +1,4 @@
-# Simple Hotline
+# Hotline Lite
 
 A simple, privacy-first Twilio-based hotline. Key features include:
 * multilingual support
@@ -81,6 +81,12 @@ If no shared calendar is provided, all Operators are considered active.
 
 ### Blocklist
 Manage the blocklist from the admin dashboard (the **Blocklist** panel). Operators can also add a caller's number to the blocklist at the end of a call. When messaging is enabled, text messages from numbers on the blocklist will not be forwarded to the hotline inbox.
+
+### Logging
+
+By design, the hotline retains only 1 hour of call logs and 7 days of messaging logs. 
+The system also creates some debugging logs. Twilio does not permit deletion of system logs, 
+but you can avoid creating non-error system logs by enabling Quiet Logging in the admin dashboard.
 
 ## Cost
 

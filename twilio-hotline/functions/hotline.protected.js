@@ -1,5 +1,7 @@
-
 exports.handler = async function (context, event, callback) {
+  const { setLogLevel } = require(Runtime.getAssets()['/logging.js'].path);
+  setLogLevel(context);
+  
   const { sayAttrs, sayLangMap, messagesMap } = require(Runtime.getAssets()['/language.js'].path);
   const { updateWorkers } = require(Runtime.getAssets()['/updateWorkers.js'].path);
   // LANGUAGES is dashboard-managed and may be unset on a fresh install (before an
@@ -104,12 +106,12 @@ exports.handler = async function (context, event, callback) {
     } else {
       // NOTE: the dialing instructions in greetingMap *must* be in the order 1, 2, 3, ...
       key = languages[event.Digits - 1];  // zero-indexed
-      console.log("Caller selected language:", key);
+      console.debug("Caller selected language:", key);
     }
     // Don't queue a call nobody can take: when no on-call operator speaks the
     // language, tell the caller and offer a message or the menu instead.
     if (!activeLanguages.has(key)) {
-      console.log("No on-call operator speaks", key);
+      console.debug("No on-call operator speaks", key);
       twiml.redirect('/noOperators?language=' + key + '&callerFrom=' + encodeURIComponent(event.From) + '&activeLanguages=' + encodeURIComponent(Array.from(activeLanguages).join(',')));
       return callback(null, twiml);
     }

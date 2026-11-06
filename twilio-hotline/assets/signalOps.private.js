@@ -6,6 +6,9 @@ const path = require('path');
 const crypto = require('crypto');
 const { loadDb, persistDb, resetKeystore } = require(Runtime.getAssets()['/syncStore.js'].path);
 
+const { setLogLevel } = require(Runtime.getAssets()['/logging.js'].path);
+setLogLevel(context);
+
 // Production loader. For local dev: '/lib/x86_64-linux-gnu/ld-linux-x86-64.so.2'.
 const LD = '/bin/ld.so';
 
@@ -38,7 +41,7 @@ function runner(_context, dbPath) {
       // failures, DEM sends, etc).
       if (res.stderr) {
         // for (const line of res.stderr.split('\n').filter(Boolean)) {
-        //  console.log(`[presage-cli ${subArgs[0]}] ${line}`);
+        //  console.debug(`[presage-cli ${subArgs[0]}] ${line}`);
         //}
       }
       if (res.status !== 0) {
@@ -177,7 +180,7 @@ async function pollForSignalSms(context, afterDate, maxSeconds) {
 }
 
 async function registerPrimary(context, { phone, captcha, smsWaitSeconds = 7 }) {
-  console.log(`[signal-register] start phone=${phone}`);
+  console.debug(`[signal-register] start phone=${phone}`);
   const sync = syncService(context);
   const dbPath = tmpDbPath();
   cleanupTmpDb(dbPath);
@@ -204,12 +207,12 @@ async function registerPrimary(context, { phone, captcha, smsWaitSeconds = 7 }) 
 
   let code;
   try {
-    console.log('[signal-register] waiting for SMS and/or early exit');
+    console.debug('[signal-register] waiting for SMS and/or early exit');
     code = await Promise.race([
       pollForSignalSms(context, startedAt, smsWaitSeconds),
       earlyExit,
     ]);
-    console.log('[signal-register] got verification code (masked)');
+    console.debug('[signal-register] got verification code (masked)');
   } catch (err) {
     try { proc.kill('SIGKILL'); } catch { /* proc may already be gone */ }
     cleanupTmpDb(dbPath);
@@ -244,7 +247,7 @@ async function registerPrimary(context, { phone, captcha, smsWaitSeconds = 7 }) 
     });
     proc.on('error', reject);
   });
-  console.log('[signal-register] presage exited OK; wiping prior keystore then persisting fresh');
+  console.debug('[signal-register] presage exited OK; wiping prior keystore then persisting fresh');
 
   // Register is explicitly a bootstrap operation — we've just minted a new Signal
   // identity and the local DB at `dbPath` is the source of truth. Wipe any prior
@@ -268,7 +271,7 @@ async function registerPrimary(context, { phone, captcha, smsWaitSeconds = 7 }) 
 
   const persistResult = await persistDb(sync, dbPath, null);
   cleanupTmpDb(dbPath);
-  console.log(`[signal-register] done: ${JSON.stringify(persistResult)}`);
+  console.debug(`[signal-register] done: ${JSON.stringify(persistResult)}`);
   return { persistResult };
 }
 

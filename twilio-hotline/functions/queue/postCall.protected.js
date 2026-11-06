@@ -1,5 +1,8 @@
 exports.handler = async function (context, event, callback) {
-  //console.log("POSTCALL " + event.taskSid + " " + event.language + " " + event.callerFrom);
+  const { setLogLevel } = require(Runtime.getAssets()['/logging.js'].path);
+  setLogLevel(context);
+
+  //console.debug("POSTCALL " + event.taskSid + " " + event.language + " " + event.callerFrom);
   const { sayAttrs, sayLangMap, messagesMap } = require(Runtime.getAssets()['/language.js'].path);
   const twiml = new Twilio.twiml.VoiceResponse();
   if (!event.Digits) {
@@ -10,12 +13,12 @@ exports.handler = async function (context, event, callback) {
           .tasks(event.taskSid)
           .reservations(event.reservationSid)
           .fetch();
-      console.log("postCall reservationStatus " + reservation.reservationStatus);
+      console.debug("postCall reservationStatus " + reservation.reservationStatus);
       if (reservation.reservationStatus != 'completed' && reservation.reservationStatus != 'accepted') {
         twiml.say(sayAttrs("en"), "Call reservation ended with status " + reservation.reservationStatus);
       }
     } catch (err) {
-      console.log("postCall reservation fetch failed: " + err.message);
+      console.debug("postCall reservation fetch failed: " + err.message);
       twiml.say(sayAttrs("en"), "Call reservation status is unavailable.");
     }
     const gather = twiml.gather({ numDigits: 1 });

@@ -1,7 +1,9 @@
 const { sendToGroup } = require(Runtime.getAssets()['/signalOps.js'].path);
+const { setLogLevel } = require(Runtime.getAssets()['/logging.js'].path);
+setLogLevel(context);
 
 const notify = async function (context, message, attachment_path = null) {
-  console.log('NOTIFY', message);
+  console.debug('NOTIFY', message);
   await sendToGroup(context, { message, attachment_path });
   return 'OK';
 };

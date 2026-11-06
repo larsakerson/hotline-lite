@@ -1,6 +1,9 @@
 exports.handler = async function (context, event, callback) {
+  const { setLogLevel } = require(Runtime.getAssets()['/logging.js'].path);
+  setLogLevel(context);
+
   const { sayLangMap, messagesMap } = require(Runtime.getAssets()['/language.js'].path);
-  console.log("QueueResult " + event.QueueResult);
+  console.debug("QueueResult " + event.QueueResult);
   const twiml = new Twilio.twiml.VoiceResponse();
   // The caller asked to leave a message, either by pressing 5 on hold, which
   // leaves the queue (QueueResult "leave"), or by pressing 5 on the

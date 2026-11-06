@@ -1,5 +1,8 @@
 exports.handler = function (context, event, callback) {
-  //console.log("PRECALL " + event.taskSid + " " + event.reservationSid + " " + event.language + " " + event.callerFrom);
+  const { setLogLevel } = require(Runtime.getAssets()['/logging.js'].path);
+  setLogLevel(context);
+  
+  //console.debug("PRECALL " + event.taskSid + " " + event.reservationSid + " " + event.language + " " + event.callerFrom);
   const { sayLangMap, messagesMap } = require(Runtime.getAssets()['/language.js'].path);
 
   const twiml = new Twilio.twiml.VoiceResponse();
