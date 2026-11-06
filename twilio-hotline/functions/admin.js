@@ -255,6 +255,7 @@ exports.handler = async function (context, event, callback) {
       for (const item of raw) {
         const number = ((item && item.number) || '').toString().trim();
         const sequence = ((item && item.sequence) || '').toString().trim();
+        const name = ((item && item.name) || '').toString().trim();
         const language = ((item && item.language) || '').toString().trim();
         let pause = parseInt(item && item.pause, 10);
         if (!Number.isFinite(pause) || pause < 0) pause = 0;
