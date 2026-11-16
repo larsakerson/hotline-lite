@@ -70,7 +70,7 @@ const sayLangMap = function (twiml, lang2, message, phone = "") {
 // Each language's phone messages are in assets/messages/<code>.private.json,
 // which Twilio serves as the private asset /messages/<code>.json. Undefined
 // when the language has no message file.
-const messageFile = lang => Runtime.getAssets()[`/messages/${lang}.json`];
+const messageFile = lang => Runtime.getAssets()[`/messages/${lang}.js`];
 
 // Loads the messages for the requested languages that have a message file.
 // It returns an object mapping language codes to the message objects.

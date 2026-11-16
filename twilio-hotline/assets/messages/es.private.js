@@ -1,4 +1,4 @@
-{
+module.exports = {
   "name": "la linea comunitaria",
   "caller": {
     "main": {

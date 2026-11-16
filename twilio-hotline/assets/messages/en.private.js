@@ -1,4 +1,4 @@
-{
+module.exports = {
   "name": "the community hotline",
   "caller": {
     "main": {

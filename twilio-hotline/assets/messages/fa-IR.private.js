@@ -1,9 +1,9 @@
-{
+module.exports = {
   "name": "خط تماس جامعه",
   "caller": {
     "main": {
       "hello": "از تماس با {hotline name} سپاسگزاریم.",
-      "menu": "برای دری روی کلید{key} را فشار دهید.",
+      "menu": "برای فارسی، کلید {key} را فشار دهید.",
       "goodbye": "خداحافظ."
     },
     "wait": {

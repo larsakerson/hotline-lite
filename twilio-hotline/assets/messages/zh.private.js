@@ -1,4 +1,4 @@
-{
+module.exports = {
   "name": "社区热线",
   "caller": {
     "main": {
