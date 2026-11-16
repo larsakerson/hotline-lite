@@ -62,20 +62,28 @@ exports.handler = async function (context, event, callback) {
   let senderId = formatE164(sender);
   senderId += event.From.includes('whatsapp') && event.ProfileName ? ' (~' + event.ProfileName + ')' : '';
   const attachmentText = mediaUrls.length > 0 ? ` with ${mediaUrls.length} attachment(s)` : '';
-  let attachment_path = mediaUrls.length > 0 ? await prepareAttachment(context, mediaUrls[0].url, mediaUrls[0].filename) : null;
   let messageBody = event.Body + "\n\n---\n" + messageType + " from " + senderId + attachmentText;
-  await notify(context, messageBody, attachment_path);
 
-  // If there are multiple media attachments (like several photos),
-  // we want to forward them all to the group chat, but only the first one was included in the main message.
-  // So we send the rest of the attachments in separate messages.
-  if (mediaUrls.length > 1) {
-    for (let media of mediaUrls.slice(1)) {
-      attachment_path = await prepareAttachment(context, media.url, media.filename);
-      messageBody = "Attachment " + (mediaUrls.indexOf(media) + 1) + " of " + mediaUrls.length + " from " + senderId;
-      await notify(context, messageBody, attachment_path);
+  // If an attachment can't be fetched or sent, send the text without it plus a
+  // note, so the group still learns the message arrived and can look it up.
+  const notifyWithAttachment = async (text, media) => {
+    try {
+      const attachment_path = await prepareAttachment(context, media.url, media.filename);
+      await notify(context, text, attachment_path);
+    } catch (e) {
+      console.error('Could not forward ' + media.contentType + ' attachment: ' + (e.message || e));
+      const note = 'An attachment (' + media.contentType + ') could not be forwarded. '
+        + 'It stays in the Twilio message log for 7 days.';
+      await notify(context, text ? text + '\n\n' + note : note);
     }
-  }
+  };
+
+  if (mediaUrls.length > 0) await notifyWithAttachment(messageBody, mediaUrls[0]);
+  else await notify(context, messageBody);
+  for (const media of mediaUrls.slice(1)) await notifyWithAttachment(
+    "Attachment " + (mediaUrls.indexOf(media) + 1) + " of " + mediaUrls.length + " from " + senderId, 
+    media
+  );
 
   // Wait a moment to ensure the message is sent before returning.
   // This is a workaround for Twilio runtime errors that can occur 
