@@ -1,11 +1,11 @@
-# Simple Hotline
+# Hotline Lite
 
 A simple, privacy-first Twilio-based hotline. Key features include:
 * multilingual support
 * minimal logging
 * web-based admin interface for managing operators, blocklists, languages, and wait messages
 * ability to accept calls from systems that impose an initial menu before connecting the caller 
-* _[alpha]_ integration with Signal for audio and text message delivery  
+* _[alpha]_ integration with Signal for audio and text message delivery 
 
 ## Preparation
 
@@ -82,15 +82,38 @@ If no shared calendar is provided, all Operators are considered active.
 ### Blocklist
 Manage the blocklist from the admin dashboard (the **Blocklist** panel). Operators can also add a caller's number to the blocklist at the end of a call. When messaging is enabled, text messages from numbers on the blocklist will not be forwarded to the hotline inbox.
 
+## Supported Languages
+
+The hotline can be configured with up to 9 active languages at a time. The hotline currently supports the following languages:
+
+- Arabic
+- English
+- French
+- Mandarin
+- Portuguese
+- Russian
+- Spanish
+- Ukrainian
+- Vietnamese
+
+Each language's phone messages are in `twilio-hotline/assets/messages/<code>.private.json`.
+To add a language, copy `en.private.json`, translate every message, and add the language's
+locale and voice to `langMap` in `twilio-hotline/assets/language.private.js`. A language is
+offered only when its file has every message the English file has; the admin dashboard lists
+the supported languages and refuses any other.
+
+To provide full support for a language, Twilio must also have a satisfactory text-to-speech engine 
+for the language in its [voice library](https://www.twilio.com/docs/voice/twiml/say/text-speech#text-to-speech-voices).
+
 ## Cost
 
 The hotline has been developed by volunteers. However, it is not free to run.
 Deploying and operating this hotline will cost you $1 per month + ~$0.02 per inbound minute.
 These fees are managed by and payable to Twilio.
 
-## Sending Messages
+## Sending messages
 
-In order to send text messages through the hotline, Twilio requires you to submit additional information through their developer console. You must first file a <a href="https://1console.twilio.com/us1/develop/trusthub/compliance-profiles/primary">Compliance Profile</a>, then take additional steps if you wish to send and receive WhatsApp messages.
+In order to send text messages through the hotline, Twilio requires you to submit additional information through their developer console. You must first file a [Compliance Profile](https://1console.twilio.com/us1/develop/trusthub/compliance-profiles/primary), then take additional steps if you wish to send and receive WhatsApp messages.
 
 ### Required: Compliance Profile
 
@@ -102,23 +125,36 @@ In order to enable WhatsApp messaging, you must first create a <a href="https://
 
 Once you have created a WhatsApp Sender for the number, you must also create a <a href="https://1console.twilio.com/us1/develop/messaging/messaging-services">Messaging Service</a>. Under the "Senders" tab, add only the WhatsApp Sender to this Messaging Service. Under the "Settings" tab, ensure that the Messaging Service "defers to the sender's webhook" for inbound messages.
 
-## Supported Languages
-
-The hotline currently supports the following languages:
-
-- Spanish
-- English
-- Dari
-- Farsi
-- French
-
 ## Features under consideration
 
  - [ ] Support for additional languages
- - [ ] Allow operator shift calendar to be enabled or disabled by language
  - [ ] Allow operators to place outbound calls
  - [ ] Allow operators to respond to incoming text messages
+ - [ ] Allow operator shift calendar to be enabled or disabled by language
  - [ ] Move [default Twilio data residency](https://www.twilio.com/docs/global-infrastructure) to the EU
+
+### Language Support Pipeline
+
+| Language      	| Messages 	| Text-to-Speech Engine 	| Supported     	|
+|----------------	|:---------:|:-----------------------:|:---------------:|
+| Arabic         	| ✅ | ✅ | ✅ |
+| English        	| ✅ | ✅ | ✅ |
+| French         	| ✅ | ✅ | ✅ |
+| Mandarin       	| ✅ | ✅ | ✅ |
+| Portuguese     	| ✅ | ✅ | ✅ |
+| Russian        	| ✅ | ✅ | ✅ |
+| Spanish        	| ✅ | ✅ | ✅ |
+| Ukrainian      	| ✅ | ✅ | ✅ |
+| Vietnamese     	| ✅ | ✅ | ✅ |
+| Dari           	| ✅ | ❌ | ❌ |
+| Farsi          	| ✅ | ❌ | ❌ |
+| Haitian Creole 	| ✅ | ❌ | ❌ |
+| Tigrinya       	| ✅ | ❌ | ❌ |
+| Amharic        	| ✅ | ❌ | ❌ |
+| Nepali         	| ✅ | ❌ | ❌ |
+| Swahili        	| ✅ | ❌ | ❌ |
+| Kinyarwanda    	| ❌ | ❌ | ❌ |
+| Kurdish        	| ❌ | ❌ | ❌ |
 
 ## Development notes
 

@@ -1,4 +1,5 @@
-// lang2 -> {locale, display name, optional text-to-speech voice}.
+// This object maps supported languages to their locale and voice information:
+// lang_code: { locale: 'locale-code', name: 'Language Name', voice: 'voice-id' }
 //
 // Without an explicit `voice`, Twilio uses the account-level default for the
 // locale (configurable in the console at
@@ -14,23 +15,24 @@
 // sw, uk, rw, ru, am, fa, vi) are left to the locale default rather than being
 // read aloud by a voice from an unrelated language.
 const langMap = {
+  // no compatible voice identified - am: { locale: 'am-ET', name: 'Amharic' }, // will Google.am-ET-Wavenet-A work?
+  ar: { locale: 'ar-IQ', name: 'Arabic', voice: 'Polly.Hala-Neural' }, // ar-AE (Gulf Arabic; nearest neural voice to ar-IQ)
   en: { locale: 'en-US', name: 'English', voice: 'Polly.Joanna-Neural' },
   es: { locale: 'es-MX', name: 'Spanish', voice: 'Polly.Mia-Neural' },
-  fa_af: { locale: 'fa-AF', name: 'Dari', voice: 'Polly.Hala-Neural' }, // Distinct from Farsi (fa-IR)
-  fa_ir: { locale: 'fa-IR', name: 'Farsi', voice: 'Polly.Hala-Neural' }, // Distinct from Dari (fa-AF)
+  fa_af: { locale: 'fa-AF', name: 'Dari' }, // Distinct from Farsi (fa-IR); will Polly.Hala-Neural work?
+  fa_ir: { locale: 'fa-IR', name: 'Farsi' }, // Distinct from Dari (fa-AF); will Polly.Hala-Neural work?
   fr: { locale: 'fr-FR', name: 'French', voice: 'Polly.Lea-Neural' },
-  // currently unsupported - pt: { locale: 'pt-BR', name: 'Portuguese', voice: 'Polly.Camila-Neural' },
-  // currently unsupported - ht: { locale: 'ht-HT', name: 'Haitian Creole' },
-  // currently unsupported - zh: { locale: 'zh-CN', name: 'Chinese', voice: 'Polly.Zhiyu-Neural' },  // cmn-CN (Mandarin)
-  // currently unsupported - ar: { locale: 'ar-IQ', name: 'Arabic', voice: 'Polly.Hala-Neural' },    // ar-AE (Gulf Arabic; nearest neural voice to ar-IQ)
-  // currently unsupported - ku: { locale: 'ku-IQ', name: 'Kurdish' },
-  // currently unsupported - ti: { locale: 'ti-ET', name: 'Tigrinya' },
-  // currently unsupported - sw: { locale: 'sw-KE', name: 'Swahili' },
-  // currently unsupported - uk: { locale: 'uk-UA', name: 'Ukrainian' },
-  // currently unsupported - rw: { locale: 'rw-RW', name: 'Kinyarwanda' },
-  // currently unsupported - ru: { locale: 'ru-RU', name: 'Russian' },
-  // currently unsupported - am: { locale: 'am-ET', name: 'Amharic' },
-  // currently unsupported - vi: { locale: 'vi-VN', name: 'Vietnamese' },
+  // no compatible voice identified - ht: { locale: 'ht-HT', name: 'Haitian Creole' }, // will Google.ht-HT-Wavenet-A work?
+  // no compatible voice identified - ku: { locale: 'ku-IQ', name: 'Kurdish' }, // will Google.ku-IQ-Wavenet-A work?
+  // no compatible voice identified - ne: { locale: 'ne-NP', name: 'Nepali' }, // will Google.ne-NP-Wavenet-A work?
+  pt: { locale: 'pt-BR', name: 'Portuguese', voice: 'Polly.Camila-Neural' },
+  ru: { locale: 'ru-RU', name: 'Russian', voice: 'Google.ru-RU-Wavenet-A' },
+  // no compatible voice identified - rw: { locale: 'rw-RW', name: 'Kinyarwanda' }, // will Google.rw-RW-Wavenet-A work?
+  // no compatible voice identified - sw: { locale: 'sw-KE', name: 'Swahili' }, // will Google.sw-KE-Wavenet-A work?
+  // no compatible voice identified - ti: { locale: 'ti-ET', name: 'Tigrinya' }, // will Google.ti-ET-Wavenet-A work?
+  uk: { locale: 'uk-UA', name: 'Ukrainian', voice: 'uk-UA-Chirp3-HD-Achernar' }, // No Ukrainina Neural voice, so using Google Generative voice (Chirp3-HD) instead of Polly Standard voice
+  vi: { locale: 'vi-VN', name: 'Vietnamese', voice: 'Google.vi-VN-Wavenet-A' },
+  zh: { locale: 'zh-CN', name: 'Mandarin', voice: 'Polly.Zhiyu-Neural' },
 };
 
 // Build the attributes object for a TwiML <Say>: always sets the language
@@ -65,223 +67,54 @@ const sayLangMap = function (twiml, lang2, message, phone = "") {
   }
 }
 
-const messagesMap = {
-  en: {
-    name: "the community hotline",
-    caller: {
-      welcome: {
-        hello: "Thank you for calling {hotline name}.",
-        menu: "Press {key} for English.",
-        goodbye: "Goodbye.",
-      },
-      wait: {
-        connecting: "Someone will be with you shortly.",
-        leaveAMessage: "Please remain on the line, or press any key to leave a message.",
-        noOperator: {
-          notice: "Sorry, no English-speaking operators are available.",
-          options: {
-            messageOrLanguage: "Press 0 to choose another language or press any other key to leave a message.",
-            message: "Stay on the line or press any key to leave a message.",
-            language: "Press 0 to choose another language.",
-          },
-        },
-      },
-      record: {
-        prompt: "Please leave a message after the tone.",
-      }
-    },
-    operator: {
-      precall: {
-        intro: "This is a call from {hotline name}. Press any key to accept the call.",
-        introNamed: "This is a call from {caller name}, through {hotline name}. Press any key to accept the call.",
-        noResponse: "You didn't respond, so we're moving on to another operator. This call was from {phone number}.",
-        reservationStatus: {
-          rescinded: "Another operator answered this call.",
-          canceled: "The caller hung up.",
-          default: "Someone else answered or the caller hung up.",
-        }
-      },
-      postcall: {
-        options: "Call finished. Press 1 to repeat the caller's number. Press 2 to add the caller to the blocklist. Press 3 to call the caller back.",
-        callerNumber: "This call was from {phone number}.",
-        blocking: "Blocking calls from {phone number}.",
-        callingBack: "Calling {phone number}.",
-      }
-    }
-  },
-  es: {
-    name: "la línea comunitaria",
-    caller: {
-      welcome: {
-        hello: "Gracias por llamar a {hotline name}.",
-        menu: "Presione {key} para español.",
-        goodbye: "Cuídese.",
-      },
-      wait: {
-        connecting: "Alguien estará con usted en breve.",
-        leaveAMessage: "Por favor, permanezca en la línea o presione cualquier tecla para dejar un mensaje.",
-        noOperator: {
-          notice: "Lo sentimos, no hay operadores disponibles que hablen español.",
-          options: {
-            messageOrLanguage: "Presione 0 para elegir otro idioma, o presione cualquier otra tecla para dejar un mensaje.",
-            message: "Permanezca en la línea o presione cualquier tecla para dejar un mensaje.",
-            language: "Presione 0 para elegir otro idioma.",
-          },
-        },
-      },
-      record: {
-        prompt: "Por favor, deje un mensaje después del tono.",
-      }
-    },
-    operator: {
-      precall: {
-        intro: "Esta es una llamada de {caller name}. Presione cualquier tecla para aceptar la llamada.",
-        introNamed: "Esta es una llamada de {caller name}, a través de {hotline name}. Presione cualquier tecla para aceptar la llamada.",
-        noResponse: "No respondió, así que pasamos a otro operador. Esta llamada era de {phone number}.",
-        reservationStatus: {
-          rescinded: "Otre operador respondió a esta llamada.",
-          canceled: "La persona en espera terminó la llamada.",
-          default: "La llamada se finalizó.",
-        }
-      },
-      postcall: {
-        options: "Llamada finalizada. Presione 1 para escuchar el número de nuevo. Presione 2 para bloquearlo. Presione 3 para marcarlo de nuevo.",
-        callerNumber: "Esta llamada era de {phone number}.",
-        blocking: "Se bloquearon llamadas de {phone number}.",
-        callingBack: "Marcando {phone number}.",
-      }
-    }
-  },
-  fa_af: {
-    name: "خط تماس جامعه",
-    caller: {
-      welcome: {
-        hello: "از تماس با {hotline name} سپاسگزاریم.",
-        menu: "برای دری روی کلید{key} را فشار دهید.",
-        goodbye: "خداحافظ.",
-      },
-      wait: {
-        connecting: "به زودی با شما تماس گرفته خواهد شد.",
-        leaveAMessage: "لطفاً در خط بمانید یا هر کلیدی را فشار دهید تا پیامی بگذارید.",
-        noOperator: {
-          notice: "",
-          options: {
-            messageOrLanguage: "",
-            message: "",
-            language: "",
-          },
-        },
-      },
-      record: {
-        prompt: "لطفاً پس از صدای زنگ پیامی بگذارید.",
-      }
-    },
-    operator: {
-      precall: {
-        intro: "این تماس از {hotline name} است. برای پذیرش تماس، هر کلیدی را فشار دهید.",
-        introNamed: "این تماس از {caller name} است, از طریق {hotline name}. برای پذیرش تماس, هر کلیدی را فشار دهید.",
-        noResponse: "شما پاسخ ندادید, بنابراین ما به اپراتور دیگری میرویم. این تماس از {phone number} بود.",
-        reservationStatus: {
-          rescinded: "اپراتور دیگری به این تماس پاسخ داد.",
-          canceled: "تماس را قطع کرد.",
-          default: "کسی دیگر پاسخ داد یا تماس قطع شد.",
-        }
-      },
-      postcall: {
-        options: "تماس تمام شد. کلید 1 را فشار دهید تا شماره مکالمه را دوباره بشنوید. کلید 2 را فشار دهید تا مکالمه را به لیست بلاک اضافه کنید. کلید 3 را فشار دهید تا مکالمه را دوباره برقرار کنید.",
-        callerNumber: "این تماس از {phone number} بود.",
-        blocking: "مکالمات از {phone number} را مسدود می‌کنم.",
-        callingBack: "در حال تماس با {phone number}.",
-      }
-    }
-  },
-  fa_ir: {
-    name: "خط تماس جامعه",
-    caller: {
-      welcome: {
-        hello: "از تماس با {hotline name} سپاسگزاریم.",
-        menu: "برای فارسی، کلید {key} را فشار دهید.",
-        goodbye: "خداحافظ.",
-      },
-      wait: {
-        connecting: "به زودی با شما تماس گرفته خواهد شد.",
-        leaveAMessage: "لطفاً در خط بمانید یا هر کلیدی را فشار دهید تا پیامی بگذارید.",
-        noOperator: {
-          notice: "",
-          options: {
-            messageOrLanguage: "",
-            message: "",
-            language: "",
-          },
-        },
-      },
-      record: {
-        prompt: "لطفاً پس از صدای زنگ پیامی بگذارید.",
-      }
-    },
-    operator: {
-      precall: {
-        intro: "این تماس از {hotline name} است. برای پذیرش تماس، هر کلیدی را فشار دهید.",
-        introNamed: "این تماس از {caller name} است, از طریق {hotline name}. برای پذیرش تماس, هر کلیدی را فشار دهید.",
-        noResponse: "شما پاسخ ندادید, بنابراین ما به اپراتور دیگری میرویم. این تماس از {phone number} بود.",
-        reservationStatus: {
-          rescinded: "اپراتور دیگری به این تماس پاسخ داد.",
-          canceled: "تماس را قطع کرد.",
-          default: "کسی دیگر پاسخ داد یا تماس قطع شد.",
-        }
-      },
-      postcall: {
-        options: "تماس تمام شد. کلید 1 را فشار دهید تا شماره مکالمه را دوباره بشنوید. کلید 2 را فشار دهید تا مکالمه را به لیست بلاک اضافه کنید. کلید 3 را فشار دهید تا مکالمه را دوباره برقرار کنید.",
-        callerNumber: "این تماس از {phone number} بود.",
-        blocking: "مکالمات از {phone number} را مسدود می‌کنم.",
-        callingBack: "در حال تماس با {phone number}.",
-      }
-    }
-  },
-  fr: {
-    name: "la ligne communautaire",
-    caller: {
-      welcome: {
-        hello: "Merci d'avoir appelé {hotline name}.",
-        menu: "Appuyez sur {key} pour français.",
-        goodbye: "Prenez soin de vous.",
-      },
-      wait: {
-        connecting: "Quelqu'un va venir vous voir d'ici peu.",
-        connecting: "Quelqu'un sera avec vous sous peu.",
-        leaveAMessage: "Veuillez rester en ligne ou appuyez sur n'importe quelle touche pour laisser un message.",
-        noOperator: {
-          notice: "Désolé, aucun opérateur parlant français n'est disponible.",
-          options: {
-            messageOrLanguage: "Restez en ligne pour laisser un message, ou appuyez sur n'importe quelle touche pour choisir une autre langue.",
-            message: "Restez en ligne pour laisser un message.",
-            language: "Appuyez sur n'importe quelle touche pour choisir une autre langue.",
-          },
-        },
-      },
-      record: {
-        prompt: "Veuillez laisser un message après le bip sonore.",
-      }
-    },
-    operator: {
-      precall: {
-        intro: "Ceci est un appel de {hotline name}. Appuyez sur n'importe quelle touche pour accepter l'appel.",
-        introNamed: "Ceci est un appel de {caller name}, via {hotline name}. Appuyez sur n'importe quelle touche pour accepter l'appel.",
-        noResponse: "Aucune réponse, nous passons donc à un autre opérateur. Cet appel provenait de {phone number}.",
-        reservationStatus: {
-          rescinded: "Un autre opérateur a répondu à cet appel.",
-          canceled: "La personne en attente a terminé l'appel.",
-          default: "L'appel a été terminé.",
-        }
-      },
-      postcall: {
-        options: "Appel terminé. Appuyez sur 1 pour écouter le numéro à nouveau. Appuyez sur 2 pour le bloquer. Appuyez sur 3 pour le rappeler.",
-        callerNumber: "Cet appel provenait de {phone number}.",
-        blocking: "Les appels de {phone number} ont été bloqués.",
-        callingBack: "Rappel de {phone number}.",
-      }
-    }
-  }
+// Each language's phone messages are in assets/messages/<code>.private.json,
+// which Twilio serves as the private asset /messages/<code>.json. Undefined
+// when the language has no message file.
+const messageFile = lang => Runtime.getAssets()[`/messages/${lang}.json`];
+
+// Loads the messages for the requested languages that have a message file.
+// It returns an object mapping language codes to the message objects.
+//
+// The messages contain placeholders, filled in by the code that speaks each message:
+//   {hotline name}  the hotline's name in this language (HOTLINE_NAME, or the file's `name`)
+//   {key}           the key to press for this language in the language menu
+//   {caller name}   the name given to the caller's number in Special Call Handling
+//   {phone number}  the caller's phone number, read out digit by digit
+//
+// This loads a language even when its file lacks some messages, so a language
+// already on the hotline keeps answering calls if one of its messages is lost;
+// supportedLanguages below keeps such a language from being added.
+const loadMessages = function (languages) {
+  return Object.fromEntries(languages.filter(messageFile)
+    .map(lang => [lang, require(messageFile(lang).path)]));
 };
 
-module.exports = { langMap, sayAttrs, sayLangMap, messagesMap, formatE164 };
+// The dotted path of every message in a messages object, e.g. "caller.wait.connecting".
+// Blank messages are left out, so they count as missing.
+const messagePaths = function (messages, prefix = '') {
+  return Object.entries(messages).flatMap(([key, value]) =>
+    value && typeof value === 'object' ? messagePaths(value, prefix + key + '.')
+      : typeof value === 'string' && value.trim() ? [prefix + key] : []);
+};
+
+// The languages the hotline can offer, in menu-list order: those with a locale
+// above and a message file holding every message the English file has (English
+// is the reference, so en.private.json must exist). The dashboard and the admin
+// API only let an admin add languages from this list. A file missing messages
+// is left out, so a partial translation is never offered; it is logged as a
+// warning and listed in incompleteLanguages (code -> the missing messages'
+// paths), which the dashboard shows to admins.
+const englishPaths = messagePaths(loadMessages(['en']).en);
+const incompleteLanguages = {};
+const supportedLanguages = Object.keys(langMap).filter(lang => {
+  if (!messageFile(lang)) return false;
+  const paths = messagePaths(loadMessages([lang])[lang]);
+  const missing = englishPaths.filter(p => !paths.includes(p));
+  if (missing.length) {
+    incompleteLanguages[lang] = missing;
+    console.warn(`Not offering ${lang}: its message file lacks ${missing.join(', ')}`);
+  }
+  return missing.length == 0;
+});
+
+module.exports = { langMap, sayAttrs, sayLangMap, loadMessages, formatE164, supportedLanguages, incompleteLanguages };

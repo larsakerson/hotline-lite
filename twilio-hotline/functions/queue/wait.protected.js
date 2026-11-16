@@ -1,5 +1,6 @@
 exports.handler = function (context, event, callback) {
-  const { sayLangMap, messagesMap } = require(Runtime.getAssets()['/language.js'].path);
+  const { sayLangMap, loadMessages } = require(Runtime.getAssets()['/language.js'].path);
+  const messages = loadMessages([event.language])[event.language].caller.wait;
   // Voice memos are delivered over Signal; without an active group (GROUP_KEY)
   // a recording would go nowhere, so don't offer to take one.
   const signalConfigured = !!context.GROUP_KEY;
