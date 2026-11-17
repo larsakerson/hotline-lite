@@ -41,7 +41,7 @@ They are then given the option to select a different language, or to leave a mes
 While a caller waits for an operator to answer, they hear a repeating sequence of wait messages in their chosen language.
 If voicemail is enabled, the caller will have the option to leave a message.
 
-### Custom Wait Messages
+#### Custom Wait Messages
 
 An optional, custom wait message can be configured for each language in the admin dashboard. This message
 can be a phrase to be voiced by a text-to-speech engine, or a url to an `.mp3` or `.wav` file that will be played
@@ -67,10 +67,10 @@ The hotline includes a password-protected web admin interface for managing opera
 The admin password is set during initial setup (via `ADMIN_PASSWORD` in the environment variables). Authentication uses HMAC-SHA1 tokens stored in the browser's session storage.
 
 From the admin dashboard you can manage:
-  * **Operators** -- View, add, edit, and remove operators (with name, phone number, and language support)
-  * **Blocklist** -- Add or remove blocked phone numbers
-  * **Languages** -- Add or remove supported languages for the caller greeting
-  * **Special Call Handling** -- Define key sequences to auto-accept collect-style calls from specific numbers, and optionally restrict the hotline to accept calls only from those numbers. Each number can also have a name, which operators hear before accepting the call, and a language, which skips the language menu for that number
+  * **Operators** — View, add, edit, and remove operators (with name, phone number, and language support)
+  * **Blocklist** — Add or remove blocked phone numbers
+  * **Languages** — Add or remove supported languages for the caller greeting
+  * **Special Call Handling** — Define key sequences to auto-accept collect-style calls from specific numbers, and optionally restrict the hotline to accept calls only from those numbers. Each number can also have a name, which operators hear before accepting the call, and a language, which skips the language menu for that number
 
 All data is stored securely in Twilio Serverless environment variables.
 
