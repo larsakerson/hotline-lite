@@ -163,8 +163,8 @@ Once you have created a WhatsApp Sender for the number, you must also create a <
 | Amharic        	| ✅ | ❌ | ❌ |
 | Nepali         	| ✅ | ❌ | ❌ |
 | Swahili        	| ✅ | ❌ | ❌ |
+| Kurdish        	| ✅ | ❌ | ❌ |
 | Kinyarwanda    	| ❌ | ❌ | ❌ |
-| Kurdish        	| ❌ | ❌ | ❌ |
 
 ## Development notes
 
