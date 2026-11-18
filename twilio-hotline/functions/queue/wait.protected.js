@@ -1,20 +1,21 @@
 exports.handler = function (context, event, callback) {
   const { sayLangMap, loadMessages } = require(Runtime.getAssets()['/language.js'].path);
-  const messages = loadMessages([event.language])[event.language].caller.wait;
+  const callerLanguage = event.language || context.LANGUAGES.split(',')[0] || 'en';
+  const messages = loadMessages([callerLanguage])[callerLanguage];
+  const waitMessages = messages.caller.wait;
   // Voice memos are delivered over Signal; without an active group (GROUP_KEY)
   // a recording would go nowhere, so don't offer to take one.
   const signalConfigured = !!context.GROUP_KEY;
-  const waitMessages = context.WAIT_MESSAGES ? JSON.parse(context.WAIT_MESSAGES) : {};
-  const callerLanguage = event.language || context.LANGUAGES.split(',')[0] || 'en';
-  const localizedWaitMessage = waitMessages[callerLanguage] || false;
+  const customWaitMessages = context.WAIT_MESSAGES ? JSON.parse(context.WAIT_MESSAGES) : {};
+  const localizedWaitMessage = customWaitMessages[callerLanguage] || false;
   // Twilio will loop this call while the user is waiting.
   const twiml = new Twilio.twiml.VoiceResponse();
   if (!event.Digits) {
     const gather = twiml.gather({ numDigits: 1 })
-    sayLangMap(gather, callerLanguage, messagesMap[callerLanguage].caller.wait.connecting);
+    sayLangMap(gather, callerLanguage, waitMessages.connecting);
     if (signalConfigured) {
       gather.pause({ length: 2 });
-      sayLangMap(gather, callerLanguage, messagesMap[callerLanguage].caller.wait.leaveAMessage);
+      sayLangMap(gather, callerLanguage, waitMessages.leaveAMessage);
     }
     if (localizedWaitMessage) {
       gather.pause({ length: 2 });
