@@ -1,4 +1,4 @@
-module.exports = {
+{
   "name": "xeta telefonê ya civakê",
   "caller": {
     "main": {

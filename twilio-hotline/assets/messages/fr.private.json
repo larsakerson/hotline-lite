@@ -1,4 +1,4 @@
-module.exports = {
+{
   "name": "l'assistance téléphonique communautaire",
   "caller": {
     "main": {

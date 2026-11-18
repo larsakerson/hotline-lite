@@ -1,4 +1,4 @@
-module.exports = {
+{
   "name": "የማህበረሰብ የስልክ መስመር",
   "caller": {
     "main": {

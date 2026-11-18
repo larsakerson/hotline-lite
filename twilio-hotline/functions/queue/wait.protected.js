@@ -1,8 +1,6 @@
 exports.handler = function (context, event, callback) {
   const { sayLangMap, loadMessages } = require(Runtime.getAssets()['/language.js'].path);
-  const callerLanguage = event.language || context.LANGUAGES.split(',')[0] || 'en';
-  const messages = loadMessages([callerLanguage])[callerLanguage];
-  const waitMessages = messages.caller.wait;
+  const messages = loadMessages([event.language])[event.language].caller.wait;
   // Voice memos are delivered over Signal; without an active group (GROUP_KEY)
   // a recording would go nowhere, so don't offer to take one.
   const signalConfigured = !!context.GROUP_KEY;
@@ -14,8 +12,13 @@ exports.handler = function (context, event, callback) {
     const gather = twiml.gather({ numDigits: 1 })
     sayLangMap(gather, callerLanguage, waitMessages.connecting);
     if (signalConfigured) {
+      const gather = twiml.gather({ numDigits: 1 })
+      sayLangMap(gather, event.language, messages.connecting);
       gather.pause({ length: 2 });
-      sayLangMap(gather, callerLanguage, waitMessages.leaveAMessage);
+      sayLangMap(gather, event.language, messages.leaveAMessage);
+    } else {
+      sayLangMap(twiml, event.language, messages.connecting);
+      twiml.pause({ length: 2 });
     }
     if (localizedWaitMessage) {
       gather.pause({ length: 2 });

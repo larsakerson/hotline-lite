@@ -1,4 +1,4 @@
-module.exports = {
+{
   "name": "خط تماس تلفنی جامعه",
   "caller": {
     "main": {
