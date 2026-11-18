@@ -16,7 +16,7 @@ exports.handler = function (context, event, callback) {
     ? precallMessages.introNamed.replace('{hotline name}', localizedName).replace('{caller name}', event.callerName)
     : precallMessages.intro.replace('{hotline name}', localizedName);
 
-  if (Object.keys(messages[event.language].name).includes("nom")) {
+  if (Object.keys(messages.name).includes("nom")) {
     // Some languages (like Ukrainian and Russian) indicate grammatical case for nouns. 
     // We add the hotline name in nominative case here.
     intro = intro.replace('{hotline name:nom}', localizedName.nom);
