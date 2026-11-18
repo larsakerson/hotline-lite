@@ -1,7 +1,7 @@
 exports.handler = async function (context, event, callback) {
   //console.log("POSTCALL " + event.taskSid + " " + event.language + " " + event.callerFrom);
   const { sayAttrs, sayLangMap, loadMessages } = require(Runtime.getAssets()['/language.js'].path);
-  const messages = loadMessages([event.language])[event.language].operator.postcall;
+  const messages = loadMessages([event.language])[event.language].operator;
   const twiml = new Twilio.twiml.VoiceResponse();
   if (!event.Digits) {
     const client = context.getTwilioClient();
@@ -12,18 +12,17 @@ exports.handler = async function (context, event, callback) {
           .reservations(event.reservationSid)
           .fetch();
       console.log("postCall reservationStatus " + reservation.reservationStatus);
-      if (reservation.reservationStatus != 'completed' && reservation.reservationStatus != 'accepted') {
-        twiml.say(sayAttrs("en"), "Call reservation ended with status " + reservation.reservationStatus);
-      }
+        ['canceled', 'rescinded'].includes(reservation.reservationStatus) && !['completed', 'accepted'].includes(reservation.reservationStatus)
+          ? twiml.say(sayAttrs(event.language), messages.precall.reservationStatus[reservation.reservationStatus])
+          : twiml.say(sayAttrs(event.language), messages.precall.reservationStatus.default)
     } catch (err) {
-      console.log("postCall reservation fetch failed: " + err.message);
-      twiml.say(sayAttrs("en"), "Call reservation status is unavailable.");
+      console.error("postCall reservation fetch failed: " + err.message);
     }
     const gather = twiml.gather({ numDigits: 1 });
     sayLangMap(
       gather,
       event.language,
-      messages.options,
+      messages.postcall.options,
       event.callerFrom
     );
   } else if (event.Digits == 1) {
@@ -31,7 +30,7 @@ exports.handler = async function (context, event, callback) {
     sayLangMap(
       twiml,
       event.language,
-      messages.callerNumber,
+      messages.postcall.callerNumber,
       event.callerFrom
     );
     twiml.redirect('');  // Redirects to the current URL
@@ -50,7 +49,7 @@ exports.handler = async function (context, event, callback) {
     sayLangMap(
       twiml,
       event.language,
-      messages.blocking,
+      messages.postcall.blocking,
       event.callerFrom
     );
   } else if (event.Digits == 3) {
@@ -58,7 +57,7 @@ exports.handler = async function (context, event, callback) {
     sayLangMap(
       twiml,
       event.language,
-      messages.callingBack,
+      messages.postcall.callingBack,
       event.callerFrom
     );
     twiml.dial(event.callerFrom);
