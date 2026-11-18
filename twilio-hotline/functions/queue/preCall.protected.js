@@ -35,9 +35,13 @@ exports.handler = function (context, event, callback) {
     twiml.redirect("/queue/rejectReservation?taskSid=" + event.taskSid + "&reservationSid=" + event.reservationSid);
     twiml.hangup();
   } else {
-    // Note: this "accepts" the task (see https://www.twilio.com/docs/taskrouter/lifecycle-task-state)
-    twiml.dial({ hangupOnStar: true })
-      .queue({ reservationSid: event.reservationSid });
+    try {
+      // Note: this "accepts" the task (see https://www.twilio.com/docs/taskrouter/lifecycle-task-state)
+      twiml.dial({ hangupOnStar: true })
+        .queue({ reservationSid: event.reservationSid });
+    } catch (err) {
+      console.error("Dial failed in queue/precall: " + err.message);
+    }
     // After the call, we pop back here.
     twiml.redirect("/queue/postCall?" +
       "taskSid=" + event.taskSid +
