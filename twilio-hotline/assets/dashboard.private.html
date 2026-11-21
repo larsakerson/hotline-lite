@@ -293,7 +293,8 @@
       <a style="color:#aaa;" href="https://www.twilio.com/docs/trust-hub/profiles/primary-compliance-profiles" target="_blank">compliance profile</a> with Twilio.)</span>
     </p>
     <div class="row">
-      <input id="autoresponderMessage" placeholder="" autocomplete="off">
+      <textarea id="autoresponderMessage" placeholder="Automatic response to messages" autocomplete="off"
+        style="flex:1;min-width:200px;height:60px;padding:6px 8px;border:1px solid #ccc;border-radius:4px;font-family:inherit;font-size:14px"></textarea>
     </div>
     <div class="row">
       <button onclick="saveAutoresponder(this)">Save</button>
@@ -903,8 +904,6 @@
 
   window.saveAutoresponder = function (btn) {
     var message = $('autoresponderMessage').value.trim();
-      // Clearing the feed leaves worker sync with nothing to fetch, which breaks
-    // the on-call schedule — confirm before removing it.
     if (!message && DATA.autoresponderMessage &&
         !confirm('Clear the autoresponder message? Incoming messages will receive no response.')) {
       return;

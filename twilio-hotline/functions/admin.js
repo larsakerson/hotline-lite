@@ -136,7 +136,7 @@ exports.handler = async function (context, event, callback) {
       const incompleteLanguages = Object.fromEntries(Object.entries(incomplete)
         .map(([code, missing]) => [code, { name: langMap[code].name, missing }]));
 
-      resp.setBody({ operators, blocklist, languages, supportedLanguages, incompleteLanguages, hotlineName, connectionSequences, allowlistOnly, icsUrl, usage });
+      resp.setBody({ operators, blocklist, languages, supportedLanguages, incompleteLanguages, hotlineName, autoresponderMessage, connectionSequences, allowlistOnly, icsUrl, usage });
 
     } else if (event.action === 'list-sms') {
       // Twilio records inbound messages in the Messages log whether or not the

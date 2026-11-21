@@ -5,12 +5,12 @@ exports.handler = function (context, event, callback) {
   // a recording would go nowhere, so don't offer to take one.
   const signalConfigured = !!context.GROUP_KEY;
   const customWaitMessages = context.WAIT_MESSAGES ? JSON.parse(context.WAIT_MESSAGES) : {};
-  const localizedWaitMessage = customWaitMessages[callerLanguage] || false;
+  const localizedWaitMessage = customWaitMessages[event.language] || false;
   // Twilio will loop this call while the user is waiting.
   const twiml = new Twilio.twiml.VoiceResponse();
   if (!event.Digits) {
     const gather = twiml.gather({ numDigits: 1 })
-    sayLangMap(gather, callerLanguage, waitMessages.connecting);
+    sayLangMap(gather, event.language, messages.connecting);
     if (signalConfigured) {
       const gather = twiml.gather({ numDigits: 1 })
       sayLangMap(gather, event.language, messages.connecting);
@@ -26,7 +26,7 @@ exports.handler = function (context, event, callback) {
         gather.play(localizedWaitMessage);
         gather.pause({ length: 2 });
       } else {
-        sayLangMap(gather, callerLanguage, localizedWaitMessage);
+        sayLangMap(gather, event.language, localizedWaitMessage);
         gather.pause({ length: 2 });
       }
     }
