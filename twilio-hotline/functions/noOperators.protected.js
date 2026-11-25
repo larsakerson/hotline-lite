@@ -36,12 +36,14 @@ exports.handler = function (context, event, callback) {
       : canLeaveMessage ? waitMessages.options.message
       : canChooseLanguage ? waitMessages.options.language
       : null;
-    // Only gather when there is a key to press. Say it twice.
+    // Only gather when there is a key to press. Give the options 
+    // once if the caller can leave a message, or twice if not.
     // The gather posts back here with the language and caller intact.
     const target = options
       ? twiml.gather({ numDigits: 1, action: '/noOperators?language=' + event.language + '&callerFrom=' + callerFrom + '&activeLanguages=' + activeLanguages })
       : twiml;
-    for (let n = 0; n < 2; n++) {
+    const repetitions = canLeaveMessage ? 1 : 2;
+    for (let n = 0; n < repetitions; n++) {
       target.say(sayAttrs(event.language), waitMessages.notice);
       if (options) target.say(sayAttrs(event.language), options);
       target.pause({ length: 1 });
